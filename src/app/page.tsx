@@ -1,9 +1,9 @@
 export default function Home() {
     return (
-        <div>
-            <h1 className="font-extrabold text-8xl text-start text-white py-3 mx-auto max-w-3xl">
-                Home
+        <main className="p-20">
+            <h1 className="scroll-m-20 text-4xl text-center font-extrabold tracking-tight lg:text-5xl">
+                Listen AI talk to each other
             </h1>
-        </div>
+        </main>
     )
 }
