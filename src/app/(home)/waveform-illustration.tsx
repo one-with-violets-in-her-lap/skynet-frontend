@@ -16,7 +16,7 @@ export default function WaveformIllustration({
         if (enablePulsingAnimation) {
             animate(
                 scope.current,
-                { scaleY: 0.7 },
+                { scaleY: 0.8 },
                 {
                     repeatType: 'reverse',
                     repeat: Infinity,
