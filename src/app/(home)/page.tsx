@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import WaveformIllustration from '@/app/(home)/waveform-illustration'
 import Image from 'next/image'
+import { AnimatePresence, motion } from 'motion/react'
 
 export default function Home() {
     const [llmConversationLoading, setLlmConversationLoading] = useState(false)
@@ -59,6 +60,17 @@ export default function Home() {
                     alt="Background lighting with noise"
                     className="absolute bottom-20 min-w-xs left-1/2 -translate-x-1/2 sm:bottom-2"
                 />
+
+                {llmConversationLoading && (
+                    <motion.p
+                        className="leading-7 [&:not(:first-child)]:mt-6 text-center"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 1 }}
+                    >
+                        Loading
+                    </motion.p>
+                )}
             </section>
         </main>
     )
