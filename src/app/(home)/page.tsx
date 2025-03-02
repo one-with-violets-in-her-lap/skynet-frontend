@@ -5,11 +5,18 @@ import noiseCircleImage from '@/assets/images/noise-circle.png'
 import { useState } from 'react'
 import Image from 'next/image'
 import { AnimatePresence, motion } from 'motion/react'
-import WaveformIllustration from '@/app/(home)/waveform-illustration'
-import HeroSection from '@/app/(home)/hero-section'
+import { connectToWebsocketsBackend } from '@/lib/backend-websockets-client'
+import WaveformIllustration from './waveform-illustration'
+import HeroSection from './hero-section'
 
 export default function Home() {
     const [llmConversationLoading, setLlmConversationLoading] = useState(false)
+
+    function connectToBackendForLlmConversationStart() {
+        setLlmConversationLoading(true)
+
+        connectToWebsocketsBackend()
+    }
 
     return (
         <main>
@@ -21,7 +28,7 @@ export default function Home() {
                         <Image
                             src={noiseCircleImage}
                             alt="Noise"
-                            className="absolute top-0 left-0 w-full h-full opacity-30"
+                            className="absolute top-0 left-0 w-full h-full opacity-60"
                         />
                     </div>
 
@@ -42,7 +49,9 @@ export default function Home() {
                 <AnimatePresence>
                     {!llmConversationLoading && (
                         <HeroSection
-                            onStartButtonClick={() => setLlmConversationLoading(true)}
+                            onStartButtonClick={
+                                connectToBackendForLlmConversationStart
+                            }
                         />
                     )}
                 </AnimatePresence>
