@@ -27,16 +27,16 @@ export default function WaveformIllustration({
     }, [enablePulsingAnimation])
 
     return (
-        <div className="max-w-full overflow-hidden">
+        <div className="w-sm overflow-hidden relative -top-12">
             <motion.img
                 ref={scope}
                 initial={{ opacity: 0, scaleY: 0 }}
-                animate={{ opacity: 0.5, scaleY: 1 }}
+                animate={{ opacity: 0.3, scaleY: 1 }}
                 transition={{
                     ease: 'easeInOut',
                     duration: 0.5,
                 }}
-                className="z-10 w-full max-w-md mx-auto min-w-lg"
+                className="w-full h-full"
                 src={waveformIllustration.src}
             />
         </div>

@@ -1,77 +1,52 @@
 'use client'
 
-import noisePurpleLightingImage from '@/assets/images/noise-purple-lighting.png'
+import noiseCircleImage from '@/assets/images/noise-circle.png'
 
-import { PlayIcon } from 'lucide-react'
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import WaveformIllustration from '@/app/(home)/waveform-illustration'
 import Image from 'next/image'
 import { AnimatePresence, motion } from 'motion/react'
+import WaveformIllustration from '@/app/(home)/waveform-illustration'
+import HeroSection from '@/app/(home)/hero-section'
 
 export default function Home() {
     const [llmConversationLoading, setLlmConversationLoading] = useState(false)
 
-    const backdropClasses =
-        'transition-all duration-500 delay-300 bg-background/30 backdrop-blur-[2px] absolute w-full h-full top-0 left-0 z-20'
-
     return (
         <main>
-            <section className="relative pb-10 overflow-x-hidden">
-                <div
-                    className={
-                        backdropClasses +
-                        ' ' +
-                        (llmConversationLoading
-                            ? 'backdrop-blur-none bg-transparent'
-                            : '')
-                    }
-                ></div>
+            <div className="relative pb-10 overflow-x-hidden h-[600px]">
+                <section className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-start p-6 pt-24">
+                    <div className="relative w-52 h-52">
+                        <div className="w-full h-full bg-purple-400 blur-3xl opacity-70"></div>
 
-                <div
-                    className={
-                        'transition-all duration-500 ease-in-out relative p-6 mb-12 z-30 flex items-center justify-center flex-col lg:p-10 ' +
-                        (llmConversationLoading ? 'opacity-0 -translate-y-52' : '')
-                    }
-                >
-                    <h1 className="scroll-m-20 text-4xl text-center font-extrabold tracking-tight lg:text-5xl">
-                        Listen two AI models talk to each other
-                    </h1>
+                        <Image
+                            src={noiseCircleImage}
+                            alt="Noise"
+                            className="absolute top-0 left-0 w-full h-full opacity-30"
+                        />
+                    </div>
 
-                    <p className="leading-7 [&:not(:first-child)]:mt-4 text-center text-muted-foreground">
-                        And other fun AI-related things
-                    </p>
+                    <WaveformIllustration
+                        enablePulsingAnimation={llmConversationLoading}
+                    />
 
-                    <Button
-                        size="lg"
-                        className="mt-6"
-                        onClick={() => setLlmConversationLoading(true)}
-                    >
-                        <PlayIcon /> Start
-                    </Button>
-                </div>
-
-                <WaveformIllustration
-                    enablePulsingAnimation={llmConversationLoading}
-                />
-
-                <Image
-                    src={noisePurpleLightingImage}
-                    alt="Background lighting with noise"
-                    className="absolute bottom-20 min-w-xs left-1/2 -translate-x-1/2 sm:bottom-2"
-                />
-
-                {llmConversationLoading && (
                     <motion.p
-                        className="leading-7 [&:not(:first-child)]:mt-6 text-center"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 1 }}
+                        className={
+                            'transition-opacity duration-500 leading-7 text-center ' +
+                            (llmConversationLoading ? 'opacity-100' : 'opacity-0')
+                        }
                     >
                         Loading
                     </motion.p>
-                )}
-            </section>
+                </section>
+
+                <AnimatePresence>
+                    {!llmConversationLoading && (
+                        <HeroSection
+                            onStartButtonClick={() => setLlmConversationLoading(true)}
+                        />
+                    )}
+                </AnimatePresence>
+            </div>
         </main>
     )
 }
