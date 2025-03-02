@@ -5,17 +5,28 @@ import noiseCircleImage from '@/assets/images/noise-circle.png'
 import { useState } from 'react'
 import Image from 'next/image'
 import { AnimatePresence, motion } from 'motion/react'
-import { connectToWebsocketsBackend } from '@/lib/backend-websockets-client'
+import {
+    addNewLlmMessageEventHandler,
+    connectToWebsocketsBackend,
+    sendStartLlmConversationEvent,
+} from '@/lib/backend-websockets-client'
 import WaveformIllustration from './waveform-illustration'
 import HeroSection from './hero-section'
 
 export default function Home() {
     const [llmConversationLoading, setLlmConversationLoading] = useState(false)
 
-    function connectToBackendForLlmConversationStart() {
+    const [messages, setMessages] = useState<string[]>([])
+
+    function startLlmConversation() {
         setLlmConversationLoading(true)
 
         connectToWebsocketsBackend()
+        sendStartLlmConversationEvent()
+
+        addNewLlmMessageEventHandler(newMessage => {
+            setMessages(messagesState => [...messagesState, newMessage.content])
+        })
     }
 
     return (
@@ -44,15 +55,17 @@ export default function Home() {
                     >
                         Loading
                     </motion.p>
+
+                    <ul>
+                        {messages.map(message => (
+                            <li key={message}>{message}</li>
+                        ))}
+                    </ul>
                 </section>
 
                 <AnimatePresence>
                     {!llmConversationLoading && (
-                        <HeroSection
-                            onStartButtonClick={
-                                connectToBackendForLlmConversationStart
-                            }
-                        />
+                        <HeroSection onStartButtonClick={startLlmConversation} />
                     )}
                 </AnimatePresence>
             </div>
