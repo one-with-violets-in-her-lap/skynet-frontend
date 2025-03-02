@@ -4,16 +4,15 @@ import noisePurpleLightingImage from '@/assets/images/noise-purple-lighting.png'
 
 import { PlayIcon } from 'lucide-react'
 import { useState } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
 import { Button } from '@/components/ui/button'
 import WaveformIllustration from '@/app/(home)/waveform-illustration'
 import Image from 'next/image'
 
 export default function Home() {
-    const [llmConversationRequested, setLlmConversationRequested] = useState(false)
+    const [llmConversationLoading, setLlmConversationLoading] = useState(false)
 
     const backdropClasses =
-        'transition-all duration-500 delay-300 bg-background/30 backdrop-blur-[1px] absolute w-full h-full top-0 left-0 z-20'
+        'transition-all duration-500 delay-300 bg-background/30 backdrop-blur-[2px] absolute w-full h-full top-0 left-0 z-20'
 
     return (
         <main>
@@ -22,13 +21,18 @@ export default function Home() {
                     className={
                         backdropClasses +
                         ' ' +
-                        (llmConversationRequested
+                        (llmConversationLoading
                             ? 'backdrop-blur-none bg-transparent'
                             : '')
                     }
                 ></div>
 
-                <div className="relative p-6 mb-12 z-30 flex items-center justify-center flex-col lg:p-10">
+                <div
+                    className={
+                        'transition-all duration-500 ease-in-out relative p-6 mb-12 z-30 flex items-center justify-center flex-col lg:p-10 ' +
+                        (llmConversationLoading ? 'opacity-0 -translate-y-52' : '')
+                    }
+                >
                     <h1 className="scroll-m-20 text-4xl text-center font-extrabold tracking-tight lg:text-5xl">
                         Listen two AI models talk to each other
                     </h1>
@@ -37,26 +41,18 @@ export default function Home() {
                         And other fun AI-related things
                     </p>
 
-                    <AnimatePresence mode="popLayout">
-                        {!llmConversationRequested && (
-                            <motion.div
-                                key="start-llm-conversation-button"
-                                exit={{ scale: 0, opacity: 0 }}
-                                transition={{ duration: 0.3 }}
-                            >
-                                <Button
-                                    className="mt-6"
-                                    size="lg"
-                                    onClick={() => setLlmConversationRequested(true)}
-                                >
-                                    <PlayIcon /> Start
-                                </Button>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                    <Button
+                        size="lg"
+                        className="mt-6"
+                        onClick={() => setLlmConversationLoading(true)}
+                    >
+                        <PlayIcon /> Start
+                    </Button>
                 </div>
 
-                <WaveformIllustration />
+                <WaveformIllustration
+                    enablePulsingAnimation={llmConversationLoading}
+                />
 
                 <Image
                     src={noisePurpleLightingImage}
