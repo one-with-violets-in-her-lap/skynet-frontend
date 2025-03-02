@@ -22,12 +22,14 @@ const socketioClient = io(
 export function connectToWebsocketsBackend() {
     console.log('Connecting to WS backend...')
 
-    try {
-        socketioClient.connect()
-    } catch (error) {
-        console.error('Failed to connect to WS backend. More info ' + String(error))
-        throw error
-    }
+    const resultPromise = new Promise<void>((resolve, reject) => {
+        socketioClient.on('connect', resolve)
+        socketioClient.on('connect-error', error => reject(error))
+    })
+
+    socketioClient.connect()
+
+    return resultPromise
 }
 
 export async function sendStartLlmConversationEvent() {

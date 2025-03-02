@@ -2,7 +2,7 @@
 
 import noiseCircleImage from '@/assets/images/noise-circle.png'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import Image from 'next/image'
 import { AnimatePresence, motion } from 'motion/react'
 import {
@@ -10,22 +10,33 @@ import {
     connectToWebsocketsBackend,
     sendStartLlmConversationEvent,
 } from '@/lib/backend-websockets-client'
-import WaveformIllustration from './waveform-illustration'
-import HeroSection from './hero-section'
+import { LlmMessageToPlay } from './_models/llm-message-to-play'
+import WaveformIllustration from './_components/waveform-illustration'
+import HeroSection from './_components/hero-section'
 
 export default function Home() {
-    const [llmConversationLoading, setLlmConversationLoading] = useState(false)
+    const [llmConversationStatus, setLlmConversationStatus] = useState<
+        'idle' | 'loading' | 'success' | 'error'
+    >('idle')
 
-    const [messages, setMessages] = useState<string[]>([])
+    const llmConversationLoading = llmConversationStatus === 'loading'
 
-    function startLlmConversation() {
-        setLlmConversationLoading(true)
+    const [messages, setMessages] = useState<LlmMessageToPlay[]>([])
+    const lastMessageId = useRef(0)
 
-        connectToWebsocketsBackend()
-        sendStartLlmConversationEvent()
+    async function startLlmConversation() {
+        setLlmConversationStatus('loading')
 
-        addNewLlmMessageEventHandler(newMessage => {
-            setMessages(messagesState => [...messagesState, newMessage.content])
+        await connectToWebsocketsBackend()
+        await sendStartLlmConversationEvent()
+
+        setLlmConversationStatus('success')
+
+        addNewLlmMessageEventHandler((newMessage, speechAudioData) => {
+            setMessages(messagesState => [
+                ...messagesState,
+                { ...newMessage, speechAudioData, id: ++lastMessageId.current },
+            ])
         })
     }
 
@@ -55,16 +66,10 @@ export default function Home() {
                     >
                         Loading
                     </motion.p>
-
-                    <ul>
-                        {messages.map(message => (
-                            <li key={message}>{message}</li>
-                        ))}
-                    </ul>
                 </section>
 
                 <AnimatePresence>
-                    {!llmConversationLoading && (
+                    {llmConversationStatus === 'idle' && (
                         <HeroSection onStartButtonClick={startLlmConversation} />
                     )}
                 </AnimatePresence>
