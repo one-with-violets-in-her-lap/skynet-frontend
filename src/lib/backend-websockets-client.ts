@@ -33,7 +33,7 @@ export function connectToWebsocketsBackend() {
 }
 
 export async function sendStartLlmConversationEvent() {
-    await socketioClient.emitWithAck(WebsocketClientEvent.StartLlmConversation)
+    socketioClient.emit(WebsocketClientEvent.StartLlmConversation)
 }
 
 export async function addNewLlmMessageEventHandler(
