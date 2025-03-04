@@ -9,7 +9,7 @@ export default function HeroSection({
 }) {
     return (
         <motion.section
-            className="absolute top-0 left-0 w-full bg-background/30 backdrop-blur-[2px] h-full flex flex-col items-center p-6 pt-16"
+            className="z-20 absolute top-0 left-0 w-full bg-background/20 backdrop-blur-[2px] h-full flex flex-col items-center p-6 pt-16"
             exit={{ y: -500, opacity: 0 }}
             transition={{ duration: 0.4, ease: 'easeIn' }}
         >

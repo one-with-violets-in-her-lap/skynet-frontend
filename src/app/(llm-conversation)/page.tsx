@@ -15,6 +15,7 @@ import { LlmConversation, LlmMessageToPlay } from './_models/llm-conversation'
 import { llmConversationReducer } from './_models/llm-conversation-reducer'
 import HeroSection from './_components/hero-section'
 import WaveformIllustration from './_components/waveform-illustration'
+import ModelSpeechVisualizerCircle from '@/app/(llm-conversation)/_components/model-speech-visualizer-circle'
 
 export default function Home() {
     const audioElement = useRef<HTMLAudioElement | null>(null)
@@ -104,14 +105,29 @@ export default function Home() {
         <main>
             <div className="relative pb-10 overflow-x-hidden h-[600px]">
                 <section className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-start p-6 pt-24">
-                    <div className="relative w-52 h-52">
-                        <div className="w-full h-full bg-purple-400 blur-3xl opacity-70"></div>
+                    <div className="relative w-62 h-62 z-10">
+                        <div className="w-full h-full bg-purple-400 blur-3xl opacity-40"></div>
 
                         <Image
                             src={noiseCircleImage}
                             alt="Noise"
                             className="absolute top-0 left-0 w-full h-full opacity-60"
                         />
+
+                        <div
+                            className={
+                                'absolute transition-transform duration-700 w-full h-full top-0 left-0 ' +
+                                (llmConversation.status === 'in-progress'
+                                    ? 'scale-100'
+                                    : 'scale-0')
+                            }
+                        >
+                            <ModelSpeechVisualizerCircle
+                                currentModelTalking={
+                                    llmConversation.currentTalkingModelName
+                                }
+                            />
+                        </div>
                     </div>
 
                     <AnimatePresence>

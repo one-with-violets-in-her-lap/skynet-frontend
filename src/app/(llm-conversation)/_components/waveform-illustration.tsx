@@ -31,7 +31,7 @@ export default function WaveformIllustration({
             <motion.img
                 ref={scope}
                 initial={{ opacity: 0, scaleY: 0 }}
-                animate={{ opacity: 0.3, scaleY: 1 }}
+                animate={{ opacity: 1, scaleY: 1 }}
                 transition={{
                     ease: 'easeInOut',
                     duration: 0.5,
