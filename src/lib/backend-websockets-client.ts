@@ -1,15 +1,18 @@
 import { io } from 'socket.io-client'
 
+export type ConversationParticipantModelName = 'model-1' | 'model-2'
+
+export interface LlmConversationMessage {
+    from_which_model: ConversationParticipantModelName
+    content: string
+}
+
 export enum WebsocketServerEvent {
     NewLlmMessage = 'new-llm-message',
 }
 
 export enum WebsocketClientEvent {
     StartLlmConversation = 'start-llm-conversation',
-}
-
-export interface LlmMessage {
-    content: string
 }
 
 const socketioClient = io(
@@ -37,11 +40,14 @@ export async function sendStartLlmConversationEvent() {
 }
 
 export async function addNewLlmMessageEventHandler(
-    doOnNewLlmMessage: (llmMessage: LlmMessage, speechAudioData: Blob) => void,
+    doOnNewLlmMessage: (
+        llmMessage: LlmConversationMessage,
+        speechAudioData: ArrayBuffer,
+    ) => void,
 ) {
     socketioClient.on(
         WebsocketServerEvent.NewLlmMessage,
-        (speechAudioData: Blob, llmMessage: LlmMessage) => {
+        (llmMessage: LlmConversationMessage, speechAudioData: ArrayBuffer) => {
             console.log(`New llm message: "${llmMessage.content}"`)
             doOnNewLlmMessage(llmMessage, speechAudioData)
         },
