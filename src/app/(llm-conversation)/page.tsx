@@ -2,7 +2,7 @@
 
 import noiseCircleImage from '@/assets/images/noise-circle.png'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useReducer, useRef, useState } from 'react'
 import Image from 'next/image'
 import { AnimatePresence, motion } from 'motion/react'
 import {
@@ -12,15 +12,16 @@ import {
     sendStartLlmConversationEvent,
 } from '@/lib/backend-websockets-client'
 import { LlmConversation, LlmMessageToPlay } from './_models/llm-conversation'
-import WaveformIllustration from './_components/waveform-illustration'
+import { llmConversationReducer } from './_models/llm-conversation-reducer'
 import HeroSection from './_components/hero-section'
+import WaveformIllustration from './_components/waveform-illustration'
 
 export default function Home() {
     const audioElement = useRef<HTMLAudioElement | null>(null)
 
     const lastMessageId = useRef(0)
 
-    const [llmConversation, setLlmConversation] = useState<LlmConversation>({
+    const [llmConversation, dispatch] = useReducer(llmConversationReducer, {
         status: 'idle',
         messageQueue: [],
         currentTalkingModelName: 'model-1',
@@ -31,9 +32,9 @@ export default function Home() {
         llmConversation.status === 'loading' || llmConversation.status === 'idle'
 
     async function startLlmConversation() {
-        setLlmConversation({
-            ...llmConversation,
-            status: 'loading',
+        dispatch({
+            type: 'update-status',
+            newStatus: 'loading',
         })
 
         await connectToWebsocketsBackend()
@@ -48,17 +49,19 @@ export default function Home() {
     ) {
         const speechAudioBlob = new Blob([speechAudioData], { type: 'audio/mpeg' })
 
-        setLlmConversation(llmConversationState => ({
-            ...llmConversationState,
-            status: 'in-progress',
-            messageQueue: llmConversationState.messageQueue.concat([
-                {
-                    ...newMessage,
-                    speechAudioData: speechAudioBlob,
-                    id: ++lastMessageId.current,
-                },
-            ]),
-        }))
+        dispatch({
+            type: 'update-status',
+            newStatus: 'in-progress',
+        })
+
+        dispatch({
+            type: 'add-message',
+            newMessage: {
+                ...newMessage,
+                speechAudioData: speechAudioBlob,
+                id: ++lastMessageId.current,
+            },
+        })
     }
 
     function playNewMessageFromQueueIfAvailable(
@@ -73,22 +76,20 @@ export default function Home() {
             audioElement.current &&
             (audioElement.current.ended || audioElement.current.src === '')
         ) {
-            const newMessageQueue = [...llmConversationState.messageQueue]
-            const nextMessageToPlay = newMessageQueue.shift() as LlmMessageToPlay
+            const messageToPlay = llmConversationState.messageQueue[0]
 
             console.log(
-                `Picked message ${nextMessageToPlay.id} from the queue. ` +
-                    `${newMessageQueue.length} messages remain. Playing the audio...`,
+                `Picked message ${messageToPlay.id} from the queue. ` +
+                    `${llmConversation.messageQueue.length - 1} messages remain. Playing the audio...`,
             )
 
             audioElement.current.src = URL.createObjectURL(
-                nextMessageToPlay.speechAudioData,
+                messageToPlay.speechAudioData,
             )
             audioElement.current.play()
 
-            setLlmConversation({
-                ...llmConversationState,
-                messageQueue: newMessageQueue,
+            dispatch({
+                type: 'delete-first-message-in-queue',
             })
         }
 
