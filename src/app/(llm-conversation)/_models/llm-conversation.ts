@@ -1,6 +1,4 @@
-import {
-    LlmConversationMessage,
-} from '@/lib/backend-websockets-client'
+import { LlmConversationMessage } from '@/lib/backend-websockets-client'
 
 export interface LlmMessageToPlay extends LlmConversationMessage {
     id: number
