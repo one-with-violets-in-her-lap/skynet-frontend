@@ -2,7 +2,7 @@
 
 import noiseCircleImage from '@/assets/images/noise-circle.png'
 
-import { useEffect, useReducer, useRef, useState } from 'react'
+import { useEffect, useReducer, useRef } from 'react'
 import Image from 'next/image'
 import { AnimatePresence, motion } from 'motion/react'
 import {
@@ -11,11 +11,12 @@ import {
     LlmConversationMessage,
     sendStartLlmConversationEvent,
 } from '@/lib/backend-websockets-client'
-import { LlmConversation, LlmMessageToPlay } from './_models/llm-conversation'
+import { LlmConversation } from './_models/llm-conversation'
 import { llmConversationReducer } from './_models/llm-conversation-reducer'
 import HeroSection from './_components/hero-section'
 import WaveformIllustration from './_components/waveform-illustration'
-import ModelSpeechVisualizerCircle from '@/app/(llm-conversation)/_components/model-speech-visualizer-circle'
+import CurrentTalkingModelCircle from './_components/current-talking-model-circle'
+import SpeechAudioLightVisualizer from '@/app/(llm-conversation)/_components/speech-audio-light-visualizer'
 
 export default function Home() {
     const audioElement = useRef<HTMLAudioElement | null>(null)
@@ -84,6 +85,11 @@ export default function Home() {
                     `${llmConversation.messageQueue.length - 1} messages remain. Playing the audio...`,
             )
 
+            dispatch({
+                type: 'update-current-talking-model',
+                newModelName: messageToPlay.from_which_model,
+            })
+
             audioElement.current.src = URL.createObjectURL(
                 messageToPlay.speechAudioData,
             )
@@ -106,12 +112,12 @@ export default function Home() {
             <div className="relative pb-10 overflow-x-hidden h-[600px]">
                 <section className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-start p-6 pt-24">
                     <div className="relative w-62 h-62 z-10">
-                        <div className="w-full h-full bg-purple-400 blur-3xl opacity-40"></div>
+                        <SpeechAudioLightVisualizer audioElementRef={audioElement} />
 
                         <Image
                             src={noiseCircleImage}
                             alt="Noise"
-                            className="absolute top-0 left-0 w-full h-full opacity-60"
+                            className="absolute top-0 left-0 w-full h-full"
                         />
 
                         <div
@@ -122,7 +128,7 @@ export default function Home() {
                                     : 'scale-0')
                             }
                         >
-                            <ModelSpeechVisualizerCircle
+                            <CurrentTalkingModelCircle
                                 currentModelTalking={
                                     llmConversation.currentTalkingModelName
                                 }
