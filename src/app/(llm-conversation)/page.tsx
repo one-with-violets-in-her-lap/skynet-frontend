@@ -23,17 +23,20 @@ export default function Home() {
 
     const lastMessageId = useRef(0)
 
-    const [llmConversation, dispatch] = useReducer(llmConversationReducer, {
-        status: 'idle',
-        messageQueue: [],
-    })
+    const [llmConversation, dispatchLlmConversationReducer] = useReducer(
+        llmConversationReducer,
+        {
+            status: 'idle',
+            messageQueue: [],
+        },
+    )
 
     const llmConversationLoading = llmConversation.status === 'loading'
     const showWaveform =
         llmConversation.status === 'loading' || llmConversation.status === 'idle'
 
     async function startLlmConversation() {
-        dispatch({
+        dispatchLlmConversationReducer({
             type: 'update-status',
             newStatus: 'loading',
         })
@@ -50,12 +53,12 @@ export default function Home() {
     ) {
         const speechAudioBlob = new Blob([speechAudioData], { type: 'audio/mpeg' })
 
-        dispatch({
+        dispatchLlmConversationReducer({
             type: 'update-status',
             newStatus: 'in-progress',
         })
 
-        dispatch({
+        dispatchLlmConversationReducer({
             type: 'add-message',
             newMessage: {
                 ...newMessage,
@@ -84,7 +87,7 @@ export default function Home() {
                     `${llmConversation.messageQueue.length - 1} messages remain. Playing the audio...`,
             )
 
-            dispatch({
+            dispatchLlmConversationReducer({
                 type: 'update-current-message-playing',
                 newMessagePlaying: messageToPlay,
             })
@@ -94,7 +97,7 @@ export default function Home() {
             )
             audioElement.current.play()
 
-            dispatch({
+            dispatchLlmConversationReducer({
                 type: 'delete-first-message-in-queue',
             })
         }
