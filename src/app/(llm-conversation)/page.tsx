@@ -108,7 +108,7 @@ export default function Home() {
 
     return (
         <main>
-            <div className="relative pb-10 overflow-x-hidden h-[600px]">
+            <div className="relative pb-10 overflow-hidden h-[700px]">
                 <section className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-start p-6 pt-24">
                     <div className="relative w-62 h-62 z-10">
                         <SpeechAudioLightVisualizer audioElementRef={audioElement} />
@@ -138,7 +138,7 @@ export default function Home() {
                         </div>
                     </div>
 
-                    <AnimatePresence>
+                    <AnimatePresence mode="popLayout">
                         {showWaveform && (
                             <motion.div
                                 exit={{ scaleX: 0, opacity: 0 }}
@@ -151,14 +151,32 @@ export default function Home() {
                         )}
                     </AnimatePresence>
 
-                    <p
-                        className={
-                            'transition-opacity duration-500 leading-7 text-center ' +
-                            (llmConversationLoading ? 'opacity-100' : 'opacity-0')
-                        }
-                    >
-                        Loading
-                    </p>
+                    <AnimatePresence mode="popLayout">
+                        {llmConversationLoading && (
+                            <motion.p
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="leading-7 text-center"
+                            >
+                                Loading
+                            </motion.p>
+                        )}
+                    </AnimatePresence>
+
+                    <AnimatePresence mode="popLayout">
+                        {llmConversation.currentMessagePlaying && (
+                            <motion.p
+                                key={llmConversation.currentMessagePlaying.content}
+                                initial={{ opacity: 0, y: '30px' }}
+                                animate={{ opacity: 1, y: '0px' }}
+                                exit={{ opacity: 0, y: '30px' }}
+                                className="leading-7 text-center max-w-xs mx-auto mt-14"
+                            >
+                                {llmConversation.currentMessagePlaying?.content}
+                            </motion.p>
+                        )}
+                    </AnimatePresence>
                 </section>
 
                 <AnimatePresence>
