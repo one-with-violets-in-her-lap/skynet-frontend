@@ -1,4 +1,3 @@
-import { ConversationParticipantModelName } from '@/lib/backend-websockets-client'
 import {
     LlmConversation,
     LlmConversationStatus,
@@ -15,9 +14,9 @@ interface LlmConversationReducerUpdateStatusAction {
     newStatus: LlmConversationStatus
 }
 
-interface LlmConversationReducerUpdateCurrentModelAction {
-    type: 'update-current-talking-model'
-    newModelName: ConversationParticipantModelName
+interface LlmConversationReducerUpdateCurrentMessagePlayingAction {
+    type: 'update-current-message-playing'
+    newMessagePlaying: LlmMessageToPlay
 }
 
 interface LlmConversationReducerDeleteFirstMessageInQueueAction {
@@ -27,7 +26,7 @@ interface LlmConversationReducerDeleteFirstMessageInQueueAction {
 type LlmConversationReducerAction =
     | LlmConversationReducerAddMessageAction
     | LlmConversationReducerUpdateStatusAction
-    | LlmConversationReducerUpdateCurrentModelAction
+    | LlmConversationReducerUpdateCurrentMessagePlayingAction
     | LlmConversationReducerDeleteFirstMessageInQueueAction
 
 export function llmConversationReducer(
@@ -49,10 +48,10 @@ export function llmConversationReducer(
             }
         }
 
-        case 'update-current-talking-model': {
+        case 'update-current-message-playing': {
             return {
                 ...state,
-                currentTalkingModelName: action.newModelName,
+                currentMessagePlaying: action.newMessagePlaying,
             }
         }
 

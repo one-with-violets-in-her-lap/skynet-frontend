@@ -26,7 +26,6 @@ export default function Home() {
     const [llmConversation, dispatch] = useReducer(llmConversationReducer, {
         status: 'idle',
         messageQueue: [],
-        currentTalkingModelName: 'model-1',
     })
 
     const llmConversationLoading = llmConversation.status === 'loading'
@@ -86,8 +85,8 @@ export default function Home() {
             )
 
             dispatch({
-                type: 'update-current-talking-model',
-                newModelName: messageToPlay.from_which_model,
+                type: 'update-current-message-playing',
+                newMessagePlaying: messageToPlay,
             })
 
             audioElement.current.src = URL.createObjectURL(
@@ -128,11 +127,14 @@ export default function Home() {
                                     : 'scale-0')
                             }
                         >
-                            <CurrentTalkingModelCircle
-                                currentModelTalking={
-                                    llmConversation.currentTalkingModelName
-                                }
-                            />
+                            {llmConversation.currentMessagePlaying && (
+                                <CurrentTalkingModelCircle
+                                    currentModelTalking={
+                                        llmConversation.currentMessagePlaying
+                                            .from_which_model
+                                    }
+                                />
+                            )}
                         </div>
                     </div>
 

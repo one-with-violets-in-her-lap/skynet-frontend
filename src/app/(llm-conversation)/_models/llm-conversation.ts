@@ -1,5 +1,4 @@
 import {
-    ConversationParticipantModelName,
     LlmConversationMessage,
 } from '@/lib/backend-websockets-client'
 
@@ -19,5 +18,5 @@ export interface LlmConversation {
     status: 'idle' | 'loading' | 'in-progress' | 'error' | 'completed'
     error?: string
     messageQueue: LlmMessageToPlay[]
-    currentTalkingModelName: ConversationParticipantModelName
+    currentMessagePlaying?: LlmMessageToPlay
 }
