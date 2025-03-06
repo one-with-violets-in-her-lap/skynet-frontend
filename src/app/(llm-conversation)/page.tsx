@@ -203,7 +203,7 @@ export default function Home() {
             />
 
             <Dialog
-                open={llmConversation.status === 'completed'}
+                open={llmConversation.status === 'ended'}
                 onOpenChange={newOpenValue =>
                     newOpenValue === false
                         ? dispatchLlmConversationReducer({

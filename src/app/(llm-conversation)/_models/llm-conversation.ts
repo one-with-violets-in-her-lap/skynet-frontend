@@ -10,10 +10,10 @@ export type LlmConversationStatus =
     | 'loading'
     | 'in-progress'
     | 'error'
-    | 'completed'
+    | 'ended'
 
 export interface LlmConversation {
-    status: 'idle' | 'loading' | 'in-progress' | 'error' | 'completed'
+    status: 'idle' | 'loading' | 'in-progress' | 'error' | 'ended'
     error?: string
     messageQueue: LlmMessageToPlay[]
     currentMessagePlaying?: LlmMessageToPlay
