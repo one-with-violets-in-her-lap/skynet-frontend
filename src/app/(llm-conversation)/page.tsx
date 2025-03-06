@@ -1,6 +1,7 @@
 'use client'
 
 import noiseCircleImage from '@/assets/images/noise-circle.png'
+import telephoneImage from '@/assets/images/telephone.png'
 
 import { useEffect, useReducer, useRef } from 'react'
 import Image from 'next/image'
@@ -17,6 +18,13 @@ import HeroSection from './_components/hero-section'
 import WaveformIllustration from './_components/waveform-illustration'
 import CurrentTalkingModelCircle from './_components/current-talking-model-circle'
 import SpeechAudioLightVisualizer from '@/app/(llm-conversation)/_components/speech-audio-light-visualizer'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog'
 
 export default function Home() {
     const audioElement = useRef<HTMLAudioElement | null>(null)
@@ -193,6 +201,35 @@ export default function Home() {
                 ref={audioElement}
                 onEnded={() => playNewMessageFromQueueIfAvailable(llmConversation)}
             />
+
+            <Dialog
+                open={llmConversation.status === 'completed'}
+                onOpenChange={newOpenValue =>
+                    newOpenValue === false
+                        ? dispatchLlmConversationReducer({
+                              type: 'update-status',
+                              newStatus: 'idle',
+                          })
+                        : {}
+                }
+            >
+                <DialogContent>
+                    <Image
+                        src={telephoneImage}
+                        alt="Noise"
+                        className="w-32 mb-2 opacity-90"
+                    />
+
+                    <DialogHeader>
+                        <DialogTitle>Conversation ended</DialogTitle>
+
+                        <DialogDescription>
+                            Server resources are limited at the moment. So you can't
+                            have a conversation longer than 10 messages
+                        </DialogDescription>
+                    </DialogHeader>
+                </DialogContent>
+            </Dialog>
         </main>
     )
 }
