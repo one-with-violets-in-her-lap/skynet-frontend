@@ -245,7 +245,7 @@ export default function Home() {
                     <Image
                         src={telephoneImage}
                         alt="Noise"
-                        className="w-32 mb-2 opacity-90"
+                        className="w-32 mb-2 mx-auto sm:mx-0"
                     />
 
                     <DialogHeader>
