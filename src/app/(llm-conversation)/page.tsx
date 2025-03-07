@@ -7,12 +7,13 @@ import { useEffect, useReducer, useRef } from 'react'
 import Image from 'next/image'
 import { AnimatePresence, motion } from 'motion/react'
 import {
+    addLlmConversationEndEventHandler,
     addNewLlmMessageEventHandler,
     connectToWebsocketsBackend,
     LlmConversationMessage,
     sendStartLlmConversationEvent,
 } from '@/lib/backend-websockets-client'
-import { LlmConversation } from './_models/llm-conversation'
+import { LlmConversation, LlmConversationStatus } from './_models/llm-conversation'
 import { llmConversationReducer } from './_models/llm-conversation-reducer'
 import HeroSection from './_components/hero-section'
 import WaveformIllustration from './_components/waveform-illustration'
@@ -34,25 +35,29 @@ export default function Home() {
     const [llmConversation, dispatchLlmConversationReducer] = useReducer(
         llmConversationReducer,
         {
-            status: 'idle',
+            status: LlmConversationStatus.Idle,
+            allMessagesReceived: false,
             messageQueue: [],
         },
     )
 
-    const llmConversationLoading = llmConversation.status === 'loading'
+    const llmConversationLoading =
+        llmConversation.status === LlmConversationStatus.Loading
     const showWaveform =
-        llmConversation.status === 'loading' || llmConversation.status === 'idle'
+        llmConversationLoading ||
+        llmConversation.status === LlmConversationStatus.Idle
 
     async function startLlmConversation() {
         dispatchLlmConversationReducer({
             type: 'update-status',
-            newStatus: 'loading',
+            newStatus: LlmConversationStatus.Loading,
         })
 
         await connectToWebsocketsBackend()
         await sendStartLlmConversationEvent()
 
         addNewLlmMessageEventHandler(handleNewLlmMessage)
+        addLlmConversationEndEventHandler(handleLlmConversationEnd)
     }
 
     function handleNewLlmMessage(
@@ -63,7 +68,7 @@ export default function Home() {
 
         dispatchLlmConversationReducer({
             type: 'update-status',
-            newStatus: 'in-progress',
+            newStatus: LlmConversationStatus.InProgress,
         })
 
         dispatchLlmConversationReducer({
@@ -73,6 +78,12 @@ export default function Home() {
                 speechAudioData: speechAudioBlob,
                 id: ++lastMessageId.current,
             },
+        })
+    }
+
+    function handleLlmConversationEnd() {
+        dispatchLlmConversationReducer({
+            type: 'enable-all-messages-received-flag',
         })
     }
 
@@ -113,6 +124,30 @@ export default function Home() {
         return
     }
 
+    function handleMessagePlayingEnd() {
+        if (
+            llmConversation.allMessagesReceived &&
+            llmConversation.messageQueue.length === 0
+        ) {
+            console.log('All messages received and played, conversation ended')
+
+            dispatchLlmConversationReducer({
+                type: 'update-status',
+                newStatus: LlmConversationStatus.Ended,
+            })
+
+            // TODO: handle current message playing reset
+        } else {
+            playNewMessageFromQueueIfAvailable(llmConversation)
+        }
+    }
+
+    function handleConversationReset() {
+        dispatchLlmConversationReducer({
+            type: 'reset',
+        })
+    }
+
     useEffect(() => {
         playNewMessageFromQueueIfAvailable(llmConversation)
     }, [llmConversation])
@@ -133,7 +168,8 @@ export default function Home() {
                         <div
                             className={
                                 'absolute transition-transform duration-700 w-full h-full top-0 left-0 ' +
-                                (llmConversation.status === 'in-progress'
+                                (llmConversation.status ===
+                                LlmConversationStatus.InProgress
                                     ? 'scale-100'
                                     : 'scale-0')
                             }
@@ -191,26 +227,18 @@ export default function Home() {
                 </section>
 
                 <AnimatePresence>
-                    {llmConversation.status === 'idle' && (
+                    {llmConversation.status === LlmConversationStatus.Idle && (
                         <HeroSection onStartButtonClick={startLlmConversation} />
                     )}
                 </AnimatePresence>
             </div>
 
-            <audio
-                ref={audioElement}
-                onEnded={() => playNewMessageFromQueueIfAvailable(llmConversation)}
-            />
+            <audio ref={audioElement} onEnded={handleMessagePlayingEnd} />
 
             <Dialog
-                open={llmConversation.status === 'ended'}
+                open={llmConversation.status === LlmConversationStatus.Ended}
                 onOpenChange={newOpenValue =>
-                    newOpenValue === false
-                        ? dispatchLlmConversationReducer({
-                              type: 'update-status',
-                              newStatus: 'idle',
-                          })
-                        : {}
+                    newOpenValue === false ? handleConversationReset() : {}
                 }
             >
                 <DialogContent>
@@ -224,8 +252,8 @@ export default function Home() {
                         <DialogTitle>Conversation ended</DialogTitle>
 
                         <DialogDescription>
-                            Server resources are limited at the moment. So you can't
-                            have a conversation longer than 10 messages
+                            Server resources are limited at the moment. So you
+                            can&lsquo;t have a conversation longer than 10 messages
                         </DialogDescription>
                     </DialogHeader>
                 </DialogContent>
