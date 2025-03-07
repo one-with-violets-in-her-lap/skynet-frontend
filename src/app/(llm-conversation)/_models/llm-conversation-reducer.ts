@@ -4,30 +4,40 @@ import {
     LlmMessageToPlay,
 } from './llm-conversation'
 
-interface LlmConversationReducerAddMessageAction {
+interface AddMessageAction {
     type: 'add-message'
     newMessage: LlmMessageToPlay
 }
 
-interface LlmConversationReducerUpdateStatusAction {
+interface UpdateConversationStatusAction {
     type: 'update-status'
     newStatus: LlmConversationStatus
 }
 
-interface LlmConversationReducerUpdateCurrentMessagePlayingAction {
+interface UpdateCurrentMessagePlayingAction {
     type: 'update-current-message-playing'
     newMessagePlaying: LlmMessageToPlay
 }
 
-interface LlmConversationReducerDeleteFirstMessageInQueueAction {
+interface DeleteFirstMessageInQueueAction {
     type: 'delete-first-message-in-queue'
 }
 
+interface EnableAllMessagesReceivedFlagAction {
+    type: 'enable-all-messages-received-flag'
+}
+
+interface ResetConversationAction {
+    type: 'reset'
+}
+
 type LlmConversationReducerAction =
-    | LlmConversationReducerAddMessageAction
-    | LlmConversationReducerUpdateStatusAction
-    | LlmConversationReducerUpdateCurrentMessagePlayingAction
-    | LlmConversationReducerDeleteFirstMessageInQueueAction
+    | AddMessageAction
+    | UpdateConversationStatusAction
+    | UpdateCurrentMessagePlayingAction
+    | DeleteFirstMessageInQueueAction
+    | EnableAllMessagesReceivedFlagAction
+    | ResetConversationAction
 
 export function llmConversationReducer(
     state: LlmConversation,
@@ -62,6 +72,21 @@ export function llmConversationReducer(
             return {
                 ...state,
                 messageQueue: newMessageQueue,
+            }
+        }
+
+        case 'enable-all-messages-received-flag': {
+            return {
+                ...state,
+                allMessagesReceived: true,
+            }
+        }
+
+        case 'reset': {
+            return {
+                status: LlmConversationStatus.Idle,
+                messageQueue: [],
+                allMessagesReceived: false,
             }
         }
     }

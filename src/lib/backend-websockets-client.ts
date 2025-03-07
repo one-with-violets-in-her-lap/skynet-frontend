@@ -9,6 +9,7 @@ export interface LlmConversationMessage {
 
 export enum WebsocketServerEvent {
     NewLlmMessage = 'new-llm-message',
+    LlmConversationEnd = 'llm-conversation-end',
 }
 
 export enum WebsocketClientEvent {
@@ -52,4 +53,10 @@ export async function addNewLlmMessageEventHandler(
             doOnNewLlmMessage(llmMessage, speechAudioData)
         },
     )
+}
+
+export async function addLlmConversationEndEventHandler(
+    doOnConversationEnd: VoidFunction,
+) {
+    socketioClient.on(WebsocketServerEvent.LlmConversationEnd, doOnConversationEnd)
 }
