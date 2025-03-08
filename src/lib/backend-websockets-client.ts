@@ -45,6 +45,12 @@ export function addWebsocketsBackendConnectionErrorHandler(doOnError: VoidFuncti
     socketioClient.on('connect_error', doOnError)
 }
 
+export function cancelWebsocketsBackendConnection() {
+    console.log('Disconnecting from WebSockets backend');
+    
+    socketioClient.disconnect()
+}
+
 export function sendStartLlmConversationEvent() {
     socketioClient.emit(WebsocketClientEvent.StartLlmConversation)
 }

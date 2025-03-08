@@ -1,8 +1,6 @@
 'use client'
 
 import noiseCircleImage from '@/assets/images/noise-circle.png'
-import telephoneImage from '@/assets/images/telephone.png'
-import errorImage from '@/assets/images/error.png'
 
 import { useEffect, useReducer, useRef } from 'react'
 import Image from 'next/image'
@@ -12,6 +10,7 @@ import {
     addLlmConversationEndEventHandler,
     addNewLlmMessageEventHandler,
     addWebsocketsBackendConnectionErrorHandler,
+    cancelWebsocketsBackendConnection,
     connectToWebsocketsBackend,
     LlmConversationMessage,
     sendStartLlmConversationEvent,
@@ -23,13 +22,8 @@ import HeroSection from './_components/hero-section'
 import WaveformIllustration from './_components/waveform-illustration'
 import CurrentTalkingModelCircle from './_components/current-talking-model-circle'
 import SpeechAudioLightVisualizer from '@/app/(llm-conversation)/_components/speech-audio-light-visualizer'
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog'
+import ErrorDialog from '@/components/error-dialog'
+import ConversationEndedDialog from '@/app/(llm-conversation)/_components/conversation-ended-dialog'
 
 export default function Home() {
     const audioElement = useRef<HTMLAudioElement | null>(null)
@@ -57,7 +51,7 @@ export default function Home() {
             newStatus: LlmConversationStatus.Loading,
         })
 
-        addWebsocketsBackendConnectionErrorHandler(handleErrorFromBackend)
+        addWebsocketsBackendConnectionErrorHandler(() => handleErrorFromBackend())
 
         await connectToWebsocketsBackend()
 
@@ -256,53 +250,18 @@ export default function Home() {
 
             <audio ref={audioElement} onEnded={handleMessagePlayingEnd} />
 
-            <Dialog
+            <ConversationEndedDialog
                 open={llmConversation.status === LlmConversationStatus.Ended}
-                onOpenChange={newOpenValue =>
-                    newOpenValue === false ? handleConversationReset() : {}
-                }
-            >
-                <DialogContent>
-                    <Image
-                        src={telephoneImage}
-                        alt="Noise"
-                        className="w-32 mb-2 mx-auto sm:mx-0"
-                    />
+                onClose={handleConversationReset}
+            />
 
-                    <DialogHeader>
-                        <DialogTitle>Conversation ended</DialogTitle>
-
-                        <DialogDescription>
-                            Server resources are limited at the moment. So you
-                            can&lsquo;t have a conversation longer than 10 messages
-                        </DialogDescription>
-                    </DialogHeader>
-                </DialogContent>
-            </Dialog>
-
-            <Dialog
+            <ErrorDialog
                 open={llmConversation.status === LlmConversationStatus.Error}
-                onOpenChange={newOpenValue =>
-                    newOpenValue === false ? handleConversationReset() : {}
-                }
-            >
-                <DialogContent>
-                    <Image
-                        src={errorImage}
-                        alt="Noise"
-                        className="w-32 mb-2 mx-auto sm:mx-0"
-                    />
-
-                    <DialogHeader>
-                        <DialogTitle>Error occurred</DialogTitle>
-
-                        <DialogDescription>
-                            Something went wrong while initiating a conversation for
-                            you. Perhaps the server is busy
-                        </DialogDescription>
-                    </DialogHeader>
-                </DialogContent>
-            </Dialog>
+                onClose={() => {
+                    cancelWebsocketsBackendConnection()
+                    handleConversationReset()
+                }}
+            />
         </main>
     )
 }
