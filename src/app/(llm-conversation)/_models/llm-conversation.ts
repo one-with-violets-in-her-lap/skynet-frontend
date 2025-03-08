@@ -41,8 +41,6 @@ export interface LlmConversation {
      */
     allMessagesReceived: boolean
 
-    error?: string
-
     messageQueue: LlmMessageToPlay[]
     currentMessagePlaying?: LlmMessageToPlay
 }

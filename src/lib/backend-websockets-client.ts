@@ -7,9 +7,15 @@ export interface LlmConversationMessage {
     content: string
 }
 
+export interface WebsocketsBackendError {
+    name: string
+    detail: string
+}
+
 export enum WebsocketServerEvent {
     NewLlmMessage = 'new-llm-message',
     LlmConversationEnd = 'llm-conversation-end',
+    Error = 'error',
 }
 
 export enum WebsocketClientEvent {
@@ -26,9 +32,8 @@ const socketioClient = io(
 export function connectToWebsocketsBackend() {
     console.log('Connecting to WS backend...')
 
-    const resultPromise = new Promise<void>((resolve, reject) => {
+    const resultPromise = new Promise<void>(resolve => {
         socketioClient.on('connect', resolve)
-        socketioClient.on('connect-error', error => reject(error))
     })
 
     socketioClient.connect()
@@ -36,11 +41,21 @@ export function connectToWebsocketsBackend() {
     return resultPromise
 }
 
-export async function sendStartLlmConversationEvent() {
+export function addWebsocketsBackendConnectionErrorHandler(doOnError: VoidFunction) {
+    socketioClient.on('connect_error', doOnError)
+}
+
+export function cancelWebsocketsBackendConnection() {
+    console.log('Disconnecting from WebSockets backend');
+    
+    socketioClient.disconnect()
+}
+
+export function sendStartLlmConversationEvent() {
     socketioClient.emit(WebsocketClientEvent.StartLlmConversation)
 }
 
-export async function addNewLlmMessageEventHandler(
+export function addNewLlmMessageEventHandler(
     doOnNewLlmMessage: (
         llmMessage: LlmConversationMessage,
         speechAudioData: ArrayBuffer,
@@ -55,8 +70,18 @@ export async function addNewLlmMessageEventHandler(
     )
 }
 
-export async function addLlmConversationEndEventHandler(
-    doOnConversationEnd: VoidFunction,
-) {
+export function addLlmConversationEndEventHandler(doOnConversationEnd: VoidFunction) {
     socketioClient.on(WebsocketServerEvent.LlmConversationEnd, doOnConversationEnd)
+}
+
+export function addBackendErrorEventHandler(
+    doOnError: (error: WebsocketsBackendError) => void,
+) {
+    socketioClient.on(WebsocketServerEvent.Error, doOnError)
+}
+
+export function clearWebsocketEventHandlers() {
+    socketioClient.removeAllListeners()
+
+    console.log('Removed all Websockets backend event handlers')
 }

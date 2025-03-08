@@ -1,17 +1,20 @@
 'use client'
 
 import noiseCircleImage from '@/assets/images/noise-circle.png'
-import telephoneImage from '@/assets/images/telephone.png'
 
 import { useEffect, useReducer, useRef } from 'react'
 import Image from 'next/image'
 import { AnimatePresence, motion } from 'motion/react'
 import {
+    addBackendErrorEventHandler,
     addLlmConversationEndEventHandler,
     addNewLlmMessageEventHandler,
+    addWebsocketsBackendConnectionErrorHandler,
+    cancelWebsocketsBackendConnection,
     connectToWebsocketsBackend,
     LlmConversationMessage,
     sendStartLlmConversationEvent,
+    WebsocketsBackendError,
 } from '@/lib/backend-websockets-client'
 import { LlmConversation, LlmConversationStatus } from './_models/llm-conversation'
 import { llmConversationReducer } from './_models/llm-conversation-reducer'
@@ -19,13 +22,8 @@ import HeroSection from './_components/hero-section'
 import WaveformIllustration from './_components/waveform-illustration'
 import CurrentTalkingModelCircle from './_components/current-talking-model-circle'
 import SpeechAudioLightVisualizer from '@/app/(llm-conversation)/_components/speech-audio-light-visualizer'
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog'
+import ErrorDialog from '@/components/error-dialog'
+import ConversationEndedDialog from '@/app/(llm-conversation)/_components/conversation-ended-dialog'
 
 export default function Home() {
     const audioElement = useRef<HTMLAudioElement | null>(null)
@@ -53,11 +51,15 @@ export default function Home() {
             newStatus: LlmConversationStatus.Loading,
         })
 
+        addWebsocketsBackendConnectionErrorHandler(() => handleErrorFromBackend())
+
         await connectToWebsocketsBackend()
-        await sendStartLlmConversationEvent()
+
+        sendStartLlmConversationEvent()
 
         addNewLlmMessageEventHandler(handleNewLlmMessage)
         addLlmConversationEndEventHandler(handleLlmConversationEnd)
+        addBackendErrorEventHandler(handleErrorFromBackend)
     }
 
     function handleNewLlmMessage(
@@ -148,6 +150,19 @@ export default function Home() {
         })
     }
 
+    function handleErrorFromBackend(error?: WebsocketsBackendError) {
+        if (error) {
+            console.error(`WS backend error: ${error.detail} (${error.name})`)
+        } else {
+            console.error("Could't connect to WS backend")
+        }
+
+        dispatchLlmConversationReducer({
+            type: 'update-status',
+            newStatus: LlmConversationStatus.Error,
+        })
+    }
+
     useEffect(() => {
         playNewMessageFromQueueIfAvailable(llmConversation)
     }, [llmConversation])
@@ -235,29 +250,18 @@ export default function Home() {
 
             <audio ref={audioElement} onEnded={handleMessagePlayingEnd} />
 
-            <Dialog
+            <ConversationEndedDialog
                 open={llmConversation.status === LlmConversationStatus.Ended}
-                onOpenChange={newOpenValue =>
-                    newOpenValue === false ? handleConversationReset() : {}
-                }
-            >
-                <DialogContent>
-                    <Image
-                        src={telephoneImage}
-                        alt="Noise"
-                        className="w-32 mb-2 mx-auto sm:mx-0"
-                    />
+                onClose={handleConversationReset}
+            />
 
-                    <DialogHeader>
-                        <DialogTitle>Conversation ended</DialogTitle>
-
-                        <DialogDescription>
-                            Server resources are limited at the moment. So you
-                            can&lsquo;t have a conversation longer than 10 messages
-                        </DialogDescription>
-                    </DialogHeader>
-                </DialogContent>
-            </Dialog>
+            <ErrorDialog
+                open={llmConversation.status === LlmConversationStatus.Error}
+                onClose={() => {
+                    cancelWebsocketsBackendConnection()
+                    handleConversationReset()
+                }}
+            />
         </main>
     )
 }
