@@ -32,7 +32,7 @@ const socketioClient = io(
 export function connectToWebsocketsBackend() {
     console.log('Connecting to WS backend...')
 
-    const resultPromise = new Promise<void>((resolve, reject) => {
+    const resultPromise = new Promise<void>(resolve => {
         socketioClient.on('connect', resolve)
     })
 
