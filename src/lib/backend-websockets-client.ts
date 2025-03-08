@@ -7,9 +7,15 @@ export interface LlmConversationMessage {
     content: string
 }
 
+export interface WebsocketsBackendError {
+    name: string
+    detail: string
+}
+
 export enum WebsocketServerEvent {
     NewLlmMessage = 'new-llm-message',
     LlmConversationEnd = 'llm-conversation-end',
+    Error = 'error',
 }
 
 export enum WebsocketClientEvent {
@@ -28,7 +34,6 @@ export function connectToWebsocketsBackend() {
 
     const resultPromise = new Promise<void>((resolve, reject) => {
         socketioClient.on('connect', resolve)
-        socketioClient.on('connect-error', error => reject(error))
     })
 
     socketioClient.connect()
@@ -36,11 +41,15 @@ export function connectToWebsocketsBackend() {
     return resultPromise
 }
 
-export async function sendStartLlmConversationEvent() {
+export function addWebsocketsBackendConnectionErrorHandler(doOnError: VoidFunction) {
+    socketioClient.on('connect_error', doOnError)
+}
+
+export function sendStartLlmConversationEvent() {
     socketioClient.emit(WebsocketClientEvent.StartLlmConversation)
 }
 
-export async function addNewLlmMessageEventHandler(
+export function addNewLlmMessageEventHandler(
     doOnNewLlmMessage: (
         llmMessage: LlmConversationMessage,
         speechAudioData: ArrayBuffer,
@@ -55,8 +64,18 @@ export async function addNewLlmMessageEventHandler(
     )
 }
 
-export async function addLlmConversationEndEventHandler(
-    doOnConversationEnd: VoidFunction,
-) {
+export function addLlmConversationEndEventHandler(doOnConversationEnd: VoidFunction) {
     socketioClient.on(WebsocketServerEvent.LlmConversationEnd, doOnConversationEnd)
+}
+
+export function addBackendErrorEventHandler(
+    doOnError: (error: WebsocketsBackendError) => void,
+) {
+    socketioClient.on(WebsocketServerEvent.Error, doOnError)
+}
+
+export function clearWebsocketEventHandlers() {
+    socketioClient.removeAllListeners()
+
+    console.log('Removed all Websockets backend event handlers')
 }

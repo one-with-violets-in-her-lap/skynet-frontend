@@ -2,16 +2,20 @@
 
 import noiseCircleImage from '@/assets/images/noise-circle.png'
 import telephoneImage from '@/assets/images/telephone.png'
+import errorImage from '@/assets/images/error.png'
 
 import { useEffect, useReducer, useRef } from 'react'
 import Image from 'next/image'
 import { AnimatePresence, motion } from 'motion/react'
 import {
+    addBackendErrorEventHandler,
     addLlmConversationEndEventHandler,
     addNewLlmMessageEventHandler,
+    addWebsocketsBackendConnectionErrorHandler,
     connectToWebsocketsBackend,
     LlmConversationMessage,
     sendStartLlmConversationEvent,
+    WebsocketsBackendError,
 } from '@/lib/backend-websockets-client'
 import { LlmConversation, LlmConversationStatus } from './_models/llm-conversation'
 import { llmConversationReducer } from './_models/llm-conversation-reducer'
@@ -53,11 +57,15 @@ export default function Home() {
             newStatus: LlmConversationStatus.Loading,
         })
 
+        addWebsocketsBackendConnectionErrorHandler(handleErrorFromBackend)
+
         await connectToWebsocketsBackend()
-        await sendStartLlmConversationEvent()
+
+        sendStartLlmConversationEvent()
 
         addNewLlmMessageEventHandler(handleNewLlmMessage)
         addLlmConversationEndEventHandler(handleLlmConversationEnd)
+        addBackendErrorEventHandler(handleErrorFromBackend)
     }
 
     function handleNewLlmMessage(
@@ -145,6 +153,19 @@ export default function Home() {
     function handleConversationReset() {
         dispatchLlmConversationReducer({
             type: 'reset',
+        })
+    }
+
+    function handleErrorFromBackend(error?: WebsocketsBackendError) {
+        if (error) {
+            console.error(`WS backend error: ${error.detail} (${error.name})`)
+        } else {
+            console.error("Could't connect to WS backend")
+        }
+
+        dispatchLlmConversationReducer({
+            type: 'update-status',
+            newStatus: LlmConversationStatus.Error,
         })
     }
 
@@ -254,6 +275,30 @@ export default function Home() {
                         <DialogDescription>
                             Server resources are limited at the moment. So you
                             can&lsquo;t have a conversation longer than 10 messages
+                        </DialogDescription>
+                    </DialogHeader>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog
+                open={llmConversation.status === LlmConversationStatus.Error}
+                onOpenChange={newOpenValue =>
+                    newOpenValue === false ? handleConversationReset() : {}
+                }
+            >
+                <DialogContent>
+                    <Image
+                        src={errorImage}
+                        alt="Noise"
+                        className="w-32 mb-2 mx-auto sm:mx-0"
+                    />
+
+                    <DialogHeader>
+                        <DialogTitle>Error occurred</DialogTitle>
+
+                        <DialogDescription>
+                            Something went wrong while initiating a conversation for
+                            you. Perhaps the server is busy
                         </DialogDescription>
                     </DialogHeader>
                 </DialogContent>
