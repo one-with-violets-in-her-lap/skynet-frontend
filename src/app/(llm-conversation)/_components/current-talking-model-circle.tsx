@@ -2,12 +2,20 @@ import fluidAnimatedPatternImage1 from '@/assets/images/fluid-animated-pattern-1
 import fluidAnimatedPatternImage2 from '@/assets/images/fluid-animated-pattern-2.gif'
 
 import Image, { StaticImageData } from 'next/image'
-import { ConversationParticipantModelName } from '@/lib/backend-websockets-client'
 import { AnimatePresence, motion } from 'motion/react'
+import { ConversationParticipantModelName } from '@/lib/backend-websockets-client'
 
-const MODELS_IMAGES: Record<ConversationParticipantModelName, StaticImageData> = {
+export const MODELS_IMAGES: Record<
+    ConversationParticipantModelName,
+    StaticImageData
+> = {
     'model-1': fluidAnimatedPatternImage1,
     'model-2': fluidAnimatedPatternImage2,
+}
+
+const MODELS_NAMES: Record<ConversationParticipantModelName, string> = {
+    'model-1': 'Model A',
+    'model-2': 'Model B',
 }
 
 export default function CurrentTalkingModelCircle({
@@ -32,7 +40,7 @@ export default function CurrentTalkingModelCircle({
                 />
 
                 <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-                    {currentModelTalking}
+                    {MODELS_NAMES[currentModelTalking]}
                 </h3>
             </motion.div>
         </AnimatePresence>
