@@ -14,7 +14,7 @@ export default function HeroSection({
             transition={{ duration: 0.4, ease: 'easeIn' }}
         >
             <h1 className="scroll-m-20 text-4xl text-center font-extrabold tracking-tight lg:text-5xl">
-                Listen two AI models talk to each other
+                Listen to two AI models talk to each other
             </h1>
 
             <p className="leading-7 [&:not(:first-child)]:mt-4 text-center text-muted-foreground">
