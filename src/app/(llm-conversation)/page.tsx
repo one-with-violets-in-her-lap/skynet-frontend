@@ -11,6 +11,7 @@ import {
     addNewLlmMessageEventHandler,
     addWebsocketsBackendConnectionErrorHandler,
     cancelWebsocketsBackendConnection,
+    clearWebsocketEventHandlers,
     connectToWebsocketsBackend,
     LlmConversationMessage,
     sendStartLlmConversationEvent,
@@ -148,6 +149,8 @@ export default function Home() {
         dispatchLlmConversationReducer({
             type: 'reset',
         })
+
+        clearWebsocketEventHandlers()
     }
 
     function handleErrorFromBackend(error?: WebsocketsBackendError) {
@@ -166,6 +169,14 @@ export default function Home() {
     useEffect(() => {
         playNewMessageFromQueueIfAvailable(llmConversation)
     }, [llmConversation])
+
+    useEffect(() => {
+        // Cleans up socket.io listeners and closes connection when component is destroyed
+        return () => {
+            clearWebsocketEventHandlers()
+            cancelWebsocketsBackendConnection()
+        }
+    }, [])
 
     return (
         <main>
