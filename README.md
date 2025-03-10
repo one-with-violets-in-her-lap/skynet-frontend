@@ -6,7 +6,7 @@ Website with fun AI-related things to waste your time on when you're bored
 
 [Check it out](https://skynet-demo.vercel.app)
 
-https://github.com/user-attachments/assets/20e97d11-0ee0-45f1-b5c4-e0b5fcbc89a1
+https://github.com/user-attachments/assets/361ef3c7-e22a-4d3f-b08a-8f6ffb06274c
 
 ## Tech info
 
