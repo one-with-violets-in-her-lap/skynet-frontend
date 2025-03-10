@@ -201,14 +201,12 @@ export default function LlmConversationPanel() {
                                     : 'scale-0')
                             }
                         >
-                            {llmConversation.currentMessagePlaying && (
-                                <CurrentTalkingModelCircle
-                                    currentModelTalking={
-                                        llmConversation.currentMessagePlaying
-                                            .from_which_model
-                                    }
-                                />
-                            )}
+                            <CurrentTalkingModelCircle
+                                currentModelTalking={
+                                    llmConversation.currentMessagePlaying
+                                        ?.from_which_model
+                                }
+                            />
                         </div>
                     </div>
 
