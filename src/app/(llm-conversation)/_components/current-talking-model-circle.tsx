@@ -40,6 +40,7 @@ export default function CurrentTalkingModelCircle({
         <>
             {getTypedObjectKeys(MODELS_TITLES).map(modelName => (
                 <div
+                    key={modelName}
                     className={
                         'transition-all duration-500 p-6 bg-background border-accent-foreground/20 border absolute top-0 left-0 w-full h-full rounded-full flex justify-center flex-col items-center gap-5 ' +
                         (currentModelTalking !== modelName
