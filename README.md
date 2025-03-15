@@ -4,7 +4,7 @@ Listen to two AI models talk to each other
 
 Website with fun AI-related things to waste your time on when you're bored
 
-[Check it out](https://skynet-demo.vercel.app)
+[Check it out](https://skynet.sorry.run)
 
 https://github.com/user-attachments/assets/361ef3c7-e22a-4d3f-b08a-8f6ffb06274c
 
