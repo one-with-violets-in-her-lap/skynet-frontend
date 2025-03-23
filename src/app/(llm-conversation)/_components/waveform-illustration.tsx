@@ -1,7 +1,5 @@
 'use client'
 
-import waveformIllustration from '@/assets/images/waveform-illustration.svg'
-
 import { motion, useAnimate } from 'motion/react'
 import { useEffect } from 'react'
 
