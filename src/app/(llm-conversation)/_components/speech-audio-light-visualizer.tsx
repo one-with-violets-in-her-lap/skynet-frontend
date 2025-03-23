@@ -18,7 +18,7 @@ export default function SpeechAudioLightVisualizer({
 
     return (
         <div
-            className="w-full h-full bg-purple-400 rounded-full blur-3xl opacity-60"
+            className="w-full h-full bg-purple-400 rounded-full blur-2xl opacity-60"
             style={{
                 transform: `scale(${lightElementScale})`,
             }}

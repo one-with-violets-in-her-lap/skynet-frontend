@@ -189,7 +189,7 @@ export default function LlmConversationPanel() {
                             src={noiseCircleImage}
                             priority
                             alt="Noise"
-                            className="absolute top-0 left-0 w-full h-full"
+                            className="absolute top-0 left-0 w-full h-full opacity-20"
                         />
 
                         <div
