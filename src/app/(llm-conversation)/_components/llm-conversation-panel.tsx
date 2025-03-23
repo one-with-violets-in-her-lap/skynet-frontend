@@ -212,14 +212,9 @@ export default function LlmConversationPanel() {
 
                     <AnimatePresence mode="popLayout">
                         {showWaveform && (
-                            <motion.div
-                                exit={{ scaleX: 0, opacity: 0 }}
-                                transition={{ duration: 0.5 }}
-                            >
-                                <WaveformIllustration
-                                    enablePulsingAnimation={llmConversationLoading}
-                                />
-                            </motion.div>
+                            <WaveformIllustration
+                                enablePulsingAnimation={llmConversationLoading}
+                            />
                         )}
                     </AnimatePresence>
 
