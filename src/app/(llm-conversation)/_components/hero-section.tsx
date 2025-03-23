@@ -17,7 +17,7 @@ export default function HeroSection({
                 Listen to two AI models talk to each other
             </h1>
 
-            <p className="leading-7 [&:not(:first-child)]:mt-4 text-center text-muted-foreground">
+            <p className="leading-7 [&:not(:first-child)]:mt-4 text-center text-foreground">
                 And other fun AI-related things
             </p>
 

@@ -189,7 +189,7 @@ export default function LlmConversationPanel() {
                             src={noiseCircleImage}
                             priority
                             alt="Noise"
-                            className="absolute top-0 left-0 w-full h-full"
+                            className="absolute top-0 left-0 w-full h-full opacity-20"
                         />
 
                         <div
@@ -212,14 +212,9 @@ export default function LlmConversationPanel() {
 
                     <AnimatePresence mode="popLayout">
                         {showWaveform && (
-                            <motion.div
-                                exit={{ scaleX: 0, opacity: 0 }}
-                                transition={{ duration: 0.5 }}
-                            >
-                                <WaveformIllustration
-                                    enablePulsingAnimation={llmConversationLoading}
-                                />
-                            </motion.div>
+                            <WaveformIllustration
+                                enablePulsingAnimation={llmConversationLoading}
+                            />
                         )}
                     </AnimatePresence>
 
