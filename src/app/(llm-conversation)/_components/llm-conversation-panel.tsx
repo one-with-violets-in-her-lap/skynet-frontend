@@ -21,8 +21,8 @@ import {
 import ConversationEndedDialog from './conversation-ended-dialog'
 import CurrentTalkingModelCircle from './current-talking-model-circle'
 import HeroSection from './hero-section'
-import SpeechAudioLightVisualizer from './speech-audio-light-visualizer'
-import WaveformIllustration from './waveform-illustration'
+import SpeechAudioLightVisualizer from '../../../components/speech-audio-light-visualizer'
+import WaveformIllustration from '../../../components/waveform-illustration'
 import { LlmConversationStatus, LlmConversation } from '../_models/llm-conversation'
 import { llmConversationReducer } from '../_models/llm-conversation-reducer'
 
