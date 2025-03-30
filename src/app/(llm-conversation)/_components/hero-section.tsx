@@ -1,11 +1,13 @@
 import { PlayIcon } from 'lucide-react'
 import { motion } from 'motion/react'
 import { Button } from '@/components/ui/button'
+import { PreferencesSheet } from '@/components/preferences-sheet'
+import { LlmConversationPreferences } from '@/lib/backend-websockets-client'
 
 export default function HeroSection({
     onStartButtonClick,
 }: {
-    onStartButtonClick: VoidFunction
+    onStartButtonClick: (preferences?: LlmConversationPreferences) => void
 }) {
     return (
         <motion.section
@@ -21,9 +23,17 @@ export default function HeroSection({
                 And other fun AI-related things
             </p>
 
-            <Button size="lg" className="mt-6" onClick={onStartButtonClick}>
-                <PlayIcon /> Start
-            </Button>
+            <div className="flex items-center gap-x-1">
+                <Button
+                    size="lg"
+                    className="mt-6"
+                    onClick={() => onStartButtonClick()}
+                >
+                    <PlayIcon /> Start
+                </Button>
+
+                <PreferencesSheet onStartButtonClick={onStartButtonClick} />
+            </div>
         </motion.section>
     )
 }

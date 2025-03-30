@@ -6,7 +6,12 @@ import { AnimatePresence, motion } from 'motion/react'
 import { useRef, useReducer, useEffect } from 'react'
 import Image from 'next/image'
 import ErrorDialog from '@/components/error-dialog'
-import * as backendWebsocketsClient from '@/lib/backend-websockets-client'
+import {
+    backendWebsocketsClient,
+    LlmConversationPreferences,
+    LlmConversationMessage,
+    WebsocketsBackendError,
+} from '@/lib/backend-websockets-client'
 import ConversationEndedDialog from './conversation-ended-dialog'
 import CurrentTalkingModelCircle from './current-talking-model-circle'
 import HeroSection from './hero-section'
@@ -35,7 +40,7 @@ export default function LlmConversationPanel() {
         llmConversationLoading ||
         llmConversation.status === LlmConversationStatus.Idle
 
-    async function startLlmConversation() {
+    async function startLlmConversation(preferences?: LlmConversationPreferences) {
         dispatchLlmConversationReducer({
             type: 'update-status',
             newStatus: LlmConversationStatus.Loading,
@@ -49,7 +54,7 @@ export default function LlmConversationPanel() {
 
         await backendWebsocketsClient.connect()
 
-        backendWebsocketsClient.emitEvent('start-llm-conversation')
+        backendWebsocketsClient.emitEvent('start-llm-conversation', preferences)
 
         backendWebsocketsClient.addEventHandler(
             'new-llm-message',
@@ -62,7 +67,7 @@ export default function LlmConversationPanel() {
     }
 
     function handleNewLlmMessage(
-        newMessage: backendWebsocketsClient.LlmConversationMessage,
+        newMessage: LlmConversationMessage,
         speechAudioData: ArrayBuffer,
     ) {
         const speechAudioBlob = new Blob([speechAudioData], { type: 'audio/mpeg' })
@@ -151,9 +156,7 @@ export default function LlmConversationPanel() {
         backendWebsocketsClient.clearEventHandlers()
     }
 
-    function handleErrorFromBackend(
-        error?: backendWebsocketsClient.WebsocketsBackendError,
-    ) {
+    function handleErrorFromBackend(error?: WebsocketsBackendError) {
         if (error) {
             console.error(`WS backend error: ${error.detail} (${error.name})`)
         } else {
