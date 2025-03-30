@@ -1,12 +1,5 @@
 import { FormEvent, useState } from 'react'
-import {
-    ArrowRightIcon,
-    AudioLinesIcon,
-    CirclePlayIcon,
-    SaveAllIcon,
-    SaveOffIcon,
-    Settings2Icon,
-} from 'lucide-react'
+import { CirclePlayIcon, Settings2Icon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
     Sheet,

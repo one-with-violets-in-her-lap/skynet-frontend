@@ -11,8 +11,8 @@ import {
 export type {
     ConversationParticipantModelName,
     LlmConversationMessage,
+    LlmConversationPreferences,
     WebsocketsBackendError,
-    LlmConversationPreferences
 }
 
 const socketioClient = io(
@@ -22,40 +22,42 @@ const socketioClient = io(
     },
 )
 
-export function connect() {
-    console.log('Connecting to WS backend...')
+export const backendWebsocketsClient = {
+    connect() {
+        console.log('Connecting to WS backend...')
 
-    const resultPromise = new Promise<void>(resolve => {
-        socketioClient.on('connect', resolve)
-    })
+        const resultPromise = new Promise<void>(resolve => {
+            socketioClient.on('connect', resolve)
+        })
 
-    socketioClient.connect()
+        socketioClient.connect()
 
-    return resultPromise
-}
+        return resultPromise
+    },
 
-export function disconnect() {
-    console.log('Disconnecting from WebSockets backend')
+    disconnect() {
+        console.log('Disconnecting from WebSockets backend')
 
-    socketioClient.disconnect()
-}
+        socketioClient.disconnect()
+    },
 
-export function addEventHandler<TEvent extends keyof EventHandlersMap>(
-    event: TEvent,
-    doOnEvent: EventHandlersMap[TEvent],
-) {
-    socketioClient.on(event as string, doOnEvent)
-}
+    addEventHandler<TEvent extends keyof EventHandlersMap>(
+        event: TEvent,
+        doOnEvent: EventHandlersMap[TEvent],
+    ) {
+        socketioClient.on(event as string, doOnEvent)
+    },
 
-export function emitEvent<TEvent extends keyof EventEmittersArgsMap>(
-    event: TEvent,
-    ...args: EventEmittersArgsMap[TEvent]
-) {
-    socketioClient.emit(event, ...args)
-}
+    emitEvent<TEvent extends keyof EventEmittersArgsMap>(
+        event: TEvent,
+        ...args: EventEmittersArgsMap[TEvent]
+    ) {
+        socketioClient.emit(event, ...args)
+    },
 
-export function clearEventHandlers() {
-    socketioClient.removeAllListeners()
+    clearEventHandlers() {
+        socketioClient.removeAllListeners()
 
-    console.log('Removed all Websockets backend event handlers')
+        console.log('Removed all Websockets backend event handlers')
+    },
 }
