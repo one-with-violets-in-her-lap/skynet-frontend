@@ -49,7 +49,9 @@ export default function LlmConversationPanel() {
 
         await backendWebsocketsClient.connect()
 
-        backendWebsocketsClient.emitEvent('start-llm-conversation')
+        backendWebsocketsClient.emitEvent('start-llm-conversation', {
+            letKnowTheyTalkWithAi: true,
+        })
 
         backendWebsocketsClient.addEventHandler(
             'new-llm-message',

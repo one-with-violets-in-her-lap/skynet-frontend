@@ -1,6 +1,7 @@
 import { PlayIcon } from 'lucide-react'
 import { motion } from 'motion/react'
 import { Button } from '@/components/ui/button'
+import { PreferencesSheet } from '@/components/preferences-sheet'
 
 export default function HeroSection({
     onStartButtonClick,
@@ -21,9 +22,13 @@ export default function HeroSection({
                 And other fun AI-related things
             </p>
 
-            <Button size="lg" className="mt-6" onClick={onStartButtonClick}>
-                <PlayIcon /> Start
-            </Button>
+            <div className="flex items-center gap-x-1">
+                <Button size="lg" className="mt-6" onClick={onStartButtonClick}>
+                    <PlayIcon /> Start
+                </Button>
+
+                <PreferencesSheet />
+            </div>
         </motion.section>
     )
 }
