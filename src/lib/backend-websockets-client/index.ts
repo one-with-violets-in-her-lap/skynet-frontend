@@ -4,6 +4,7 @@ import {
     EventHandlersMap,
     ConversationParticipantModelName,
     LlmConversationMessage,
+    LlmConversationPreferences,
     WebsocketsBackendError,
 } from '@/lib/backend-websockets-client/types'
 
@@ -11,6 +12,7 @@ export type {
     ConversationParticipantModelName,
     LlmConversationMessage,
     WebsocketsBackendError,
+    LlmConversationPreferences
 }
 
 const socketioClient = io(

@@ -35,7 +35,9 @@ export default function LlmConversationPanel() {
         llmConversationLoading ||
         llmConversation.status === LlmConversationStatus.Idle
 
-    async function startLlmConversation() {
+    async function startLlmConversation(
+        preferences?: backendWebsocketsClient.LlmConversationPreferences,
+    ) {
         dispatchLlmConversationReducer({
             type: 'update-status',
             newStatus: LlmConversationStatus.Loading,
@@ -49,9 +51,7 @@ export default function LlmConversationPanel() {
 
         await backendWebsocketsClient.connect()
 
-        backendWebsocketsClient.emitEvent('start-llm-conversation', {
-            letKnowTheyTalkWithAi: true,
-        })
+        backendWebsocketsClient.emitEvent('start-llm-conversation', preferences)
 
         backendWebsocketsClient.addEventHandler(
             'new-llm-message',
