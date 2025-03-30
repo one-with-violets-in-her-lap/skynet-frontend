@@ -1,3 +1,4 @@
+import type { SocketIoSystemEventHandlersMap } from '@/lib/utils/socket-io'
 import { io } from 'socket.io-client'
 
 export type ConversationParticipantModelName = 'model-1' | 'model-2'
@@ -12,14 +13,19 @@ export interface WebsocketsBackendError {
     detail: string
 }
 
-export enum WebsocketServerEvent {
-    NewLlmMessage = 'new-llm-message',
-    LlmConversationEnd = 'llm-conversation-end',
-    Error = 'error',
+interface EventHandlersMap extends SocketIoSystemEventHandlersMap {
+    'new-llm-message': (
+        llmMessage: LlmConversationMessage,
+        speechAudioData: ArrayBuffer,
+    ) => void
+
+    'llm-conversation-end': () => void
+
+    error: (error: WebsocketsBackendError) => void
 }
 
-export enum WebsocketClientEvent {
-    StartLlmConversation = 'start-llm-conversation',
+interface EventEmittersArgsMap {
+    'start-llm-conversation': []
 }
 
 const socketioClient = io(
@@ -29,7 +35,7 @@ const socketioClient = io(
     },
 )
 
-export function connectToWebsocketsBackend() {
+export function connect() {
     console.log('Connecting to WS backend...')
 
     const resultPromise = new Promise<void>(resolve => {
@@ -41,46 +47,27 @@ export function connectToWebsocketsBackend() {
     return resultPromise
 }
 
-export function addWebsocketsBackendConnectionErrorHandler(doOnError: VoidFunction) {
-    socketioClient.on('connect_error', doOnError)
-}
-
-export function cancelWebsocketsBackendConnection() {
+export function disconnect() {
     console.log('Disconnecting from WebSockets backend')
 
     socketioClient.disconnect()
 }
 
-export function sendStartLlmConversationEvent() {
-    socketioClient.emit(WebsocketClientEvent.StartLlmConversation)
-}
-
-export function addNewLlmMessageEventHandler(
-    doOnNewLlmMessage: (
-        llmMessage: LlmConversationMessage,
-        speechAudioData: ArrayBuffer,
-    ) => void,
+export function addEventHandler<TEvent extends keyof EventHandlersMap>(
+    event: TEvent,
+    doOnEvent: EventHandlersMap[TEvent],
 ) {
-    socketioClient.on(
-        WebsocketServerEvent.NewLlmMessage,
-        (llmMessage: LlmConversationMessage, speechAudioData: ArrayBuffer) => {
-            console.log(`New llm message: "${llmMessage.content}"`)
-            doOnNewLlmMessage(llmMessage, speechAudioData)
-        },
-    )
+    socketioClient.on(event as string, doOnEvent)
 }
 
-export function addLlmConversationEndEventHandler(doOnConversationEnd: VoidFunction) {
-    socketioClient.on(WebsocketServerEvent.LlmConversationEnd, doOnConversationEnd)
-}
-
-export function addBackendErrorEventHandler(
-    doOnError: (error: WebsocketsBackendError) => void,
+export function emitEvent<TEvent extends keyof EventEmittersArgsMap>(
+    event: TEvent,
+    ...args: EventEmittersArgsMap[TEvent]
 ) {
-    socketioClient.on(WebsocketServerEvent.Error, doOnError)
+    socketioClient.emit(event, ...args)
 }
 
-export function clearWebsocketEventHandlers() {
+export function clearEventHandlers() {
     socketioClient.removeAllListeners()
 
     console.log('Removed all Websockets backend event handlers')

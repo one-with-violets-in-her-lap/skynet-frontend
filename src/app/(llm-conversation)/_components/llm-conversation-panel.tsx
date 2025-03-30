@@ -6,18 +6,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { useRef, useReducer, useEffect } from 'react'
 import Image from 'next/image'
 import ErrorDialog from '@/components/error-dialog'
-import {
-    addWebsocketsBackendConnectionErrorHandler,
-    connectToWebsocketsBackend,
-    sendStartLlmConversationEvent,
-    addNewLlmMessageEventHandler,
-    addLlmConversationEndEventHandler,
-    addBackendErrorEventHandler,
-    LlmConversationMessage,
-    clearWebsocketEventHandlers,
-    WebsocketsBackendError,
-    cancelWebsocketsBackendConnection,
-} from '@/lib/backend-websockets-client'
+import * as backendWebsocketsClient from '@/lib/backend-websockets-client'
 import ConversationEndedDialog from './conversation-ended-dialog'
 import CurrentTalkingModelCircle from './current-talking-model-circle'
 import HeroSection from './hero-section'
@@ -52,19 +41,28 @@ export default function LlmConversationPanel() {
             newStatus: LlmConversationStatus.Loading,
         })
 
-        addWebsocketsBackendConnectionErrorHandler(() => handleErrorFromBackend())
+        backendWebsocketsClient.addEventHandler(
+            'connect_error',
+            handleErrorFromBackend,
+        )
+        backendWebsocketsClient.addEventHandler('error', handleErrorFromBackend)
 
-        await connectToWebsocketsBackend()
+        await backendWebsocketsClient.connect()
 
-        sendStartLlmConversationEvent()
+        backendWebsocketsClient.emitEvent('start-llm-conversation')
 
-        addNewLlmMessageEventHandler(handleNewLlmMessage)
-        addLlmConversationEndEventHandler(handleLlmConversationEnd)
-        addBackendErrorEventHandler(handleErrorFromBackend)
+        backendWebsocketsClient.addEventHandler(
+            'new-llm-message',
+            handleNewLlmMessage,
+        )
+        backendWebsocketsClient.addEventHandler(
+            'llm-conversation-end',
+            handleLlmConversationEnd,
+        )
     }
 
     function handleNewLlmMessage(
-        newMessage: LlmConversationMessage,
+        newMessage: backendWebsocketsClient.LlmConversationMessage,
         speechAudioData: ArrayBuffer,
     ) {
         const speechAudioBlob = new Blob([speechAudioData], { type: 'audio/mpeg' })
@@ -150,10 +148,12 @@ export default function LlmConversationPanel() {
             type: 'reset',
         })
 
-        clearWebsocketEventHandlers()
+        backendWebsocketsClient.clearEventHandlers()
     }
 
-    function handleErrorFromBackend(error?: WebsocketsBackendError) {
+    function handleErrorFromBackend(
+        error?: backendWebsocketsClient.WebsocketsBackendError,
+    ) {
         if (error) {
             console.error(`WS backend error: ${error.detail} (${error.name})`)
         } else {
@@ -173,8 +173,8 @@ export default function LlmConversationPanel() {
     useEffect(() => {
         // Cleans up socket.io listeners and closes connection when component is destroyed
         return () => {
-            clearWebsocketEventHandlers()
-            cancelWebsocketsBackendConnection()
+            backendWebsocketsClient.clearEventHandlers()
+            backendWebsocketsClient.disconnect()
         }
     }, [])
 
@@ -263,7 +263,7 @@ export default function LlmConversationPanel() {
             <ErrorDialog
                 open={llmConversation.status === LlmConversationStatus.Error}
                 onClose={() => {
-                    cancelWebsocketsBackendConnection()
+                    backendWebsocketsClient.disconnect()
                     handleConversationReset()
                 }}
             />
