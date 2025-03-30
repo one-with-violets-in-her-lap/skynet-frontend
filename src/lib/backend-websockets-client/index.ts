@@ -1,31 +1,16 @@
-import type { SocketIoSystemEventHandlersMap } from '@/lib/utils/socket-io'
 import { io } from 'socket.io-client'
+import {
+    EventEmittersArgsMap,
+    EventHandlersMap,
+    ConversationParticipantModelName,
+    LlmConversationMessage,
+    WebsocketsBackendError,
+} from '@/lib/backend-websockets-client/types'
 
-export type ConversationParticipantModelName = 'model-1' | 'model-2'
-
-export interface LlmConversationMessage {
-    from_which_model: ConversationParticipantModelName
-    content: string
-}
-
-export interface WebsocketsBackendError {
-    name: string
-    detail: string
-}
-
-interface EventHandlersMap extends SocketIoSystemEventHandlersMap {
-    'new-llm-message': (
-        llmMessage: LlmConversationMessage,
-        speechAudioData: ArrayBuffer,
-    ) => void
-
-    'llm-conversation-end': () => void
-
-    error: (error: WebsocketsBackendError) => void
-}
-
-interface EventEmittersArgsMap {
-    'start-llm-conversation': []
+export type {
+    ConversationParticipantModelName,
+    LlmConversationMessage,
+    WebsocketsBackendError,
 }
 
 const socketioClient = io(
