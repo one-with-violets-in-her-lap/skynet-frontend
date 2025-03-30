@@ -20,6 +20,10 @@ import WaveformIllustration from '../../../components/waveform-illustration'
 import { LlmConversationStatus, LlmConversation } from '../_models/llm-conversation'
 import { llmConversationReducer } from '../_models/llm-conversation-reducer'
 
+const DEFAULT_PREFERENCES: LlmConversationPreferences = {
+    letKnowTheyTalkWithAi: false,
+}
+
 export default function LlmConversationPanel() {
     const audioElement = useRef<HTMLAudioElement | null>(null)
 
@@ -40,7 +44,9 @@ export default function LlmConversationPanel() {
         llmConversationLoading ||
         llmConversation.status === LlmConversationStatus.Idle
 
-    async function startLlmConversation(preferences?: LlmConversationPreferences) {
+    async function startLlmConversation(
+        preferences: LlmConversationPreferences = DEFAULT_PREFERENCES,
+    ) {
         dispatchLlmConversationReducer({
             type: 'update-status',
             newStatus: LlmConversationStatus.Loading,
