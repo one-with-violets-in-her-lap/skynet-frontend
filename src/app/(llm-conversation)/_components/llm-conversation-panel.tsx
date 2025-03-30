@@ -3,7 +3,7 @@
 import noiseCircleImage from '@/assets/images/noise-circle.png'
 
 import { AnimatePresence, motion } from 'motion/react'
-import { useRef, useReducer, useEffect } from 'react'
+import { useRef, useReducer, useEffect, useState } from 'react'
 import Image from 'next/image'
 import ErrorDialog from '@/components/error-dialog'
 import {
@@ -37,6 +37,8 @@ export default function LlmConversationPanel() {
             messageQueue: [],
         },
     )
+
+    const [firstMessagePlayed, setFirstMessagePlayed] = useState(false)
 
     const llmConversationLoading =
         llmConversation.status === LlmConversationStatus.Loading
@@ -137,6 +139,8 @@ export default function LlmConversationPanel() {
     }
 
     function handleMessagePlayingEnd() {
+        setFirstMessagePlayed(true)
+
         if (
             llmConversation.allMessagesReceived &&
             llmConversation.messageQueue.length === 0
@@ -244,6 +248,7 @@ export default function LlmConversationPanel() {
                         {llmConversation.currentMessagePlaying && (
                             <motion.p
                                 key={llmConversation.currentMessagePlaying.content}
+                                transition={{ delay: firstMessagePlayed ? 0 : 0.55 }}
                                 initial={{ opacity: 0, y: '30px' }}
                                 animate={{ opacity: 1, y: '0px' }}
                                 exit={{ opacity: 0, y: '30px' }}
