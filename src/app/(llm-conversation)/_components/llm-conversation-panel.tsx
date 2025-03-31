@@ -3,7 +3,7 @@
 import noiseCircleImage from '@/assets/images/noise-circle.png'
 
 import { AnimatePresence, motion } from 'motion/react'
-import { useRef, useReducer, useEffect, useState } from 'react'
+import { useRef, useReducer, useEffect } from 'react'
 import Image from 'next/image'
 import ErrorDialog from '@/components/error-dialog'
 import {
@@ -27,24 +27,29 @@ const DEFAULT_PREFERENCES: LlmConversationPreferences = {
 export default function LlmConversationPanel() {
     const audioElement = useRef<HTMLAudioElement | null>(null)
 
-    const lastMessageId = useRef(0)
-
     const [llmConversation, dispatchLlmConversationReducer] = useReducer(
         llmConversationReducer,
         {
             status: LlmConversationStatus.Idle,
             allMessagesReceived: false,
             messageQueue: [],
+            messageList: [],
         },
     )
-
-    const [firstMessagePlayed, setFirstMessagePlayed] = useState(false)
 
     const llmConversationLoading =
         llmConversation.status === LlmConversationStatus.Loading
     const showWaveform =
         llmConversationLoading ||
         llmConversation.status === LlmConversationStatus.Idle
+
+    const lastMessageId = useRef(0)
+
+    /**
+     * Flag that means second message is received and is ready to play
+     * Lets you know when to disable first message appearing animation delay
+     */
+    const secondMessageReceived = llmConversation.messageList.length > 1
 
     async function startLlmConversation(
         preferences: LlmConversationPreferences = DEFAULT_PREFERENCES,
@@ -86,7 +91,7 @@ export default function LlmConversationPanel() {
         })
 
         dispatchLlmConversationReducer({
-            type: 'add-message',
+            type: 'add-message-to-queue-and-list',
             newMessage: {
                 ...newMessage,
                 speechAudioData: speechAudioBlob,
@@ -139,8 +144,6 @@ export default function LlmConversationPanel() {
     }
 
     function handleMessagePlayingEnd() {
-        setFirstMessagePlayed(true)
-
         if (
             llmConversation.allMessagesReceived &&
             llmConversation.messageQueue.length === 0
@@ -248,7 +251,9 @@ export default function LlmConversationPanel() {
                         {llmConversation.currentMessagePlaying && (
                             <motion.p
                                 key={llmConversation.currentMessagePlaying.content}
-                                transition={{ delay: firstMessagePlayed ? 0 : 0.55 }}
+                                transition={{
+                                    delay: secondMessageReceived ? 0 : 0.55,
+                                }}
                                 initial={{ opacity: 0, y: '30px' }}
                                 animate={{ opacity: 1, y: '0px' }}
                                 exit={{ opacity: 0, y: '30px' }}

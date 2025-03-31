@@ -43,4 +43,6 @@ export interface LlmConversation {
 
     messageQueue: LlmMessageToPlay[]
     currentMessagePlaying?: LlmMessageToPlay
+
+    messageList: LlmConversationMessage[]
 }

@@ -5,7 +5,7 @@ import {
 } from './llm-conversation'
 
 interface AddMessageAction {
-    type: 'add-message'
+    type: 'add-message-to-queue-and-list'
     newMessage: LlmMessageToPlay
 }
 
@@ -44,10 +44,11 @@ export function llmConversationReducer(
     action: LlmConversationReducerAction,
 ): LlmConversation {
     switch (action.type) {
-        case 'add-message': {
+        case 'add-message-to-queue-and-list': {
             return {
                 ...state,
                 messageQueue: state.messageQueue.concat(action.newMessage),
+                messageList: state.messageList.concat(action.newMessage),
             }
         }
 
@@ -86,6 +87,7 @@ export function llmConversationReducer(
             return {
                 status: LlmConversationStatus.Idle,
                 messageQueue: [],
+                messageList: [],
                 allMessagesReceived: false,
             }
         }
