@@ -48,7 +48,10 @@ export function PreferencesSheet({
                     <SheetTitle>Preferences</SheetTitle>
                 </SheetHeader>
 
-                <form className="p-4 pb-7 pt-0 h-full flex flex-col justify-between sm:justify-start" onSubmit={handleFormSubmit}>
+                <form
+                    className="p-4 pb-7 pt-0 h-full flex flex-col justify-between sm:justify-start"
+                    onSubmit={handleFormSubmit}
+                >
                     <div className="flex items-center gap-x-3 mb-8 sm:mb-14">
                         <Switch
                             id="letKnowTheyTalkToAiSwitch"
