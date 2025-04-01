@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import {
     Sheet,
     SheetContent,
+    SheetDescription,
     SheetHeader,
     SheetTitle,
     SheetTrigger,
@@ -11,6 +12,7 @@ import {
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { LlmConversationPreferences } from '@/lib/backend-websockets-client'
+import { useScreenSize } from '@/hooks/screen-size'
 
 export function PreferencesSheet({
     onStartButtonClick,
@@ -18,6 +20,8 @@ export function PreferencesSheet({
     onStartButtonClick: (preferences: LlmConversationPreferences) => void
 }) {
     const [opened, setOpened] = useState(false)
+
+    const screenSize = useScreenSize()
 
     const [preferences, setPreferences] = useState<LlmConversationPreferences>({
         letKnowTheyTalkWithAi: false,
@@ -37,36 +41,42 @@ export function PreferencesSheet({
                 </Button>
             </SheetTrigger>
 
-            <SheetContent>
+            <SheetContent
+                side={screenSize === 'smAndLarger' ? 'right' : 'bottom'}
+                className="h-3/5 sm:h-full"
+            >
                 <SheetHeader>
                     <SheetTitle>Preferences</SheetTitle>
+
+                    <SheetDescription>Customize the AI conversation</SheetDescription>
                 </SheetHeader>
 
-                <div className="p-4 pt-0">
-                    <form onSubmit={handleFormSubmit}>
-                        <div className="flex items-center gap-x-2 mb-8">
-                            <Switch
-                                id="letKnowTheyTalkToAiSwitch"
-                                checked={preferences.letKnowTheyTalkWithAi}
-                                onCheckedChange={newCheckedValue =>
-                                    setPreferences({
-                                        ...preferences,
-                                        letKnowTheyTalkWithAi: newCheckedValue,
-                                    })
-                                }
-                            />
+                <form
+                    className="p-4 pb-7 pt-0 h-full flex flex-col justify-between sm:justify-start"
+                    onSubmit={handleFormSubmit}
+                >
+                    <div className="flex items-center gap-x-3 mb-8 sm:mb-14">
+                        <Switch
+                            id="letKnowTheyTalkToAiSwitch"
+                            checked={preferences.letKnowTheyTalkWithAi}
+                            onCheckedChange={newCheckedValue =>
+                                setPreferences({
+                                    ...preferences,
+                                    letKnowTheyTalkWithAi: newCheckedValue,
+                                })
+                            }
+                        />
 
-                            <Label htmlFor="letKnowTheyTalkToAiSwitch">
-                                Let AI model know it talks to another AI
-                            </Label>
-                        </div>
+                        <Label htmlFor="letKnowTheyTalkToAiSwitch">
+                            Let AI model know it talks to another AI
+                        </Label>
+                    </div>
 
-                        <Button variant="default">
-                            <CirclePlayIcon />
-                            Start
-                        </Button>
-                    </form>
-                </div>
+                    <Button variant="default">
+                        <CirclePlayIcon />
+                        Start
+                    </Button>
+                </form>
             </SheetContent>
         </Sheet>
     )
