@@ -20,7 +20,7 @@ export default function HeroSection({
             </h1>
 
             <p className="leading-7 [&:not(:first-child)]:mt-4 text-center text-foreground">
-                And other fun AI-related things
+                Other fun AI-related things coming soon
             </p>
 
             <div className="flex items-center gap-x-1">
