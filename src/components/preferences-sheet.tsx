@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import {
     Sheet,
     SheetContent,
+    SheetDescription,
     SheetHeader,
     SheetTitle,
     SheetTrigger,
@@ -46,6 +47,8 @@ export function PreferencesSheet({
             >
                 <SheetHeader>
                     <SheetTitle>Preferences</SheetTitle>
+
+                    <SheetDescription>Customize the AI conversation</SheetDescription>
                 </SheetHeader>
 
                 <form
