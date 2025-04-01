@@ -6,7 +6,7 @@ Website with fun AI-related things to waste your time on when you're bored
 
 [Check it out](https://skynet.sorry.run)
 
-https://github.com/user-attachments/assets/361ef3c7-e22a-4d3f-b08a-8f6ffb06274c
+[🎥 Video demo](https://youtu.be/Mz_zE7ewTjo)
 
 ## Tech info
 
