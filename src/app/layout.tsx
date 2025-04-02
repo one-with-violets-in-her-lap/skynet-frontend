@@ -1,6 +1,7 @@
 import '@/app/globals.css'
 
 import { Metadata } from 'next'
+import { Footer } from '@/components/footer'
 
 export const metadata: Metadata = {
     title: 'Skynet',
@@ -14,7 +15,13 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body>{children}</body>
+            <body>
+                <div className="min-h-screen flex flex-col">
+                    <main className="grow">{children}</main>
+
+                    <Footer />
+                </div>
+            </body>
         </html>
     )
 }

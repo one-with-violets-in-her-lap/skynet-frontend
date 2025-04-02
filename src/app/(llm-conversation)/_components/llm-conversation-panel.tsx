@@ -195,8 +195,8 @@ export default function LlmConversationPanel() {
     }, [])
 
     return (
-        <main>
-            <div className="relative pb-10 overflow-hidden h-[700px]">
+        <div>
+            <div className="relative pb-10 overflow-hidden min-h-[700px]">
                 <section className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-start p-6 pt-24">
                     <div className="relative w-56 h-56 sm:w-64 sm:h-64 z-10">
                         <SpeechAudioLightVisualizer audioElementRef={audioElement} />
@@ -286,6 +286,6 @@ export default function LlmConversationPanel() {
                     handleConversationReset()
                 }}
             />
-        </main>
+        </div>
     )
 }
