@@ -20,7 +20,7 @@ export function SourceCodeGithubLink() {
         <div className="relative w-fit">
             <TooltipProvider>
                 <Tooltip open={tooltipOpened} onOpenChange={setTooltipOpened}>
-                    <TooltipContent>It's open source</TooltipContent>
+                    <TooltipContent>It&lsquo;s open source</TooltipContent>
 
                     <TooltipTrigger asChild>
                         <a
