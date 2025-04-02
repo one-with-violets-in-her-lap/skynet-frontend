@@ -4,7 +4,7 @@ import { useAudioAmplitudeAnalyzer } from '@/hooks/audio-amplitude-analyser'
 const AMPLITUDE_MULTIPLIER = 1.2
 const MIN_AMPLITUDE = 0.8
 
-export default function SpeechAudioLightVisualizer({
+export function SpeechAudioLightVisualizer({
     audioElementRef,
 }: {
     audioElementRef: RefObject<HTMLAudioElement | null>

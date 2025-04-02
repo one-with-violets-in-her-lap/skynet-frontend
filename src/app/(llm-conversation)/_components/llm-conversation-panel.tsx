@@ -5,18 +5,18 @@ import noiseCircleImage from '@/assets/images/noise-circle.png'
 import { AnimatePresence, motion } from 'motion/react'
 import { useRef, useReducer, useEffect } from 'react'
 import Image from 'next/image'
-import ErrorDialog from '@/components/error-dialog'
+import { ErrorDialog } from '@/components/error-dialog'
 import {
     backendWebsocketsClient,
     LlmConversationPreferences,
     LlmConversationMessage,
     WebsocketsBackendError,
 } from '@/lib/backend-websockets-client'
-import ConversationEndedDialog from './conversation-ended-dialog'
-import CurrentTalkingModelCircle from './current-talking-model-circle'
-import HeroSection from './hero-section'
-import SpeechAudioLightVisualizer from '../../../components/speech-audio-light-visualizer'
-import WaveformIllustration from '../../../components/waveform-illustration'
+import { SpeechAudioLightVisualizer } from '@/components/speech-audio-light-visualizer'
+import { WaveformIllustration } from '@/components/waveform-illustration'
+import { ConversationEndedDialog } from './conversation-ended-dialog'
+import { CurrentTalkingModelCircle } from './current-talking-model-circle'
+import { HeroSection } from './hero-section'
 import { LlmConversationStatus, LlmConversation } from '../_models/llm-conversation'
 import { llmConversationReducer } from '../_models/llm-conversation-reducer'
 
@@ -24,7 +24,7 @@ const DEFAULT_PREFERENCES: LlmConversationPreferences = {
     letKnowTheyTalkWithAi: false,
 }
 
-export default function LlmConversationPanel() {
+export function LlmConversationPanel() {
     const audioElement = useRef<HTMLAudioElement | null>(null)
 
     const [llmConversation, dispatchLlmConversationReducer] = useReducer(

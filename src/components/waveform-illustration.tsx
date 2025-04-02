@@ -3,7 +3,7 @@
 import { motion, useAnimate } from 'motion/react'
 import { useEffect } from 'react'
 
-export default function WaveformIllustration({
+export function WaveformIllustration({
     enablePulsingAnimation,
 }: {
     enablePulsingAnimation: boolean

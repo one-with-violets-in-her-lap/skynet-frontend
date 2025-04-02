@@ -27,7 +27,7 @@ const MODELS_DISAPPEARING_ANIMATION_CLASSES: Record<
     'model-2': 'translate-x-24 opacity-0',
 }
 
-export default function CurrentTalkingModelCircle({
+export function CurrentTalkingModelCircle({
     currentModelTalking,
 }: {
     currentModelTalking?: ConversationParticipantModelName

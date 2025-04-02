@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { PreferencesSheet } from '@/components/preferences-sheet'
 import { LlmConversationPreferences } from '@/lib/backend-websockets-client'
 
-export default function HeroSection({
+export function HeroSection({
     onStartButtonClick,
 }: {
     onStartButtonClick: (preferences?: LlmConversationPreferences) => void

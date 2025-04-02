@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dialog'
 import Image from 'next/image'
 
-export default function ConversationEndedDialog({
+export function ConversationEndedDialog({
     open,
     onClose,
 }: {

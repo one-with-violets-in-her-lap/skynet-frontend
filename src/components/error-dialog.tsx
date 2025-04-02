@@ -9,7 +9,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog'
 
-export default function ErrorDialog({
+export function ErrorDialog({
     open,
     onClose,
 }: {
