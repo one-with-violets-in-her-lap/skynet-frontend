@@ -1,4 +1,7 @@
-import { LlmConversationMessage } from '@/lib/backend-websockets-client'
+import {
+    LlmConversationMessage,
+    WebsocketsBackendError,
+} from '@/lib/backend-websockets-client'
 
 export interface LlmMessageToPlay extends LlmConversationMessage {
     id: number
@@ -27,7 +30,7 @@ export enum LlmConversationStatus {
     Ended = 'ended',
 
     /**
-     * Error occurred. Error message is available in {@link LlmConversation.error} field
+     * Error occurred. Error message can be available in {@link LlmConversation.error} field
      */
     Error = 'error',
 }
@@ -45,4 +48,6 @@ export interface LlmConversation {
     currentMessagePlaying?: LlmMessageToPlay
 
     messageList: LlmConversationMessage[]
+
+    error: WebsocketsBackendError | null
 }

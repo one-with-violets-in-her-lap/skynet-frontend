@@ -34,6 +34,7 @@ export function LlmConversationPanel() {
             allMessagesReceived: false,
             messageQueue: [],
             messageList: [],
+            error: null,
         },
     )
 
@@ -177,8 +178,8 @@ export function LlmConversationPanel() {
         }
 
         dispatchLlmConversationReducer({
-            type: 'update-status',
-            newStatus: LlmConversationStatus.Error,
+            type: 'set-error',
+            error: error || null,
         })
     }
 
@@ -281,6 +282,7 @@ export function LlmConversationPanel() {
 
             <ErrorDialog
                 open={llmConversation.status === LlmConversationStatus.Error}
+                error={llmConversation.error}
                 onClose={() => {
                     backendWebsocketsClient.disconnect()
                     handleConversationReset()

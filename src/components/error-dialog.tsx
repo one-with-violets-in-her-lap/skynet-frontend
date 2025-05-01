@@ -8,14 +8,28 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog'
+import { LlmConversation } from '@/app/(llm-conversation)/_models/llm-conversation'
 
 export function ErrorDialog({
     open,
+    error,
     onClose,
 }: {
     open: boolean
+    error: LlmConversation['error']
     onClose: VoidFunction
 }) {
+    const heading =
+        error?.name === 'rate-limited-error'
+            ? 'Usage limit is reached'
+            : 'Error occurred'
+
+    const text =
+        error?.name === 'rate-limited-error'
+            ? 'Please try again later'
+            : 'Something went wrong while initiating a conversation for you. ' +
+              'Perhaps the server is busy'
+
     return (
         <Dialog
             open={open}
@@ -29,12 +43,9 @@ export function ErrorDialog({
                 />
 
                 <DialogHeader>
-                    <DialogTitle>Error occurred</DialogTitle>
+                    <DialogTitle>{heading}</DialogTitle>
 
-                    <DialogDescription>
-                        Something went wrong while initiating a conversation for you.
-                        Perhaps the server is busy
-                    </DialogDescription>
+                    <DialogDescription>{text}</DialogDescription>
                 </DialogHeader>
             </DialogContent>
         </Dialog>

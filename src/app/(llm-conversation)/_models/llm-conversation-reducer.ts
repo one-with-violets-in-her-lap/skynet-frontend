@@ -14,6 +14,11 @@ interface UpdateConversationStatusAction {
     newStatus: LlmConversationStatus
 }
 
+interface SetErrorAction {
+    type: 'set-error'
+    error: LlmConversation['error']
+}
+
 interface UpdateCurrentMessagePlayingAction {
     type: 'update-current-message-playing'
     newMessagePlaying: LlmMessageToPlay
@@ -38,6 +43,7 @@ type LlmConversationReducerAction =
     | DeleteFirstMessageInQueueAction
     | EnableAllMessagesReceivedFlagAction
     | ResetConversationAction
+    | SetErrorAction
 
 export function llmConversationReducer(
     state: LlmConversation,
@@ -56,6 +62,14 @@ export function llmConversationReducer(
             return {
                 ...state,
                 status: action.newStatus,
+            }
+        }
+
+        case 'set-error': {
+            return {
+                ...state,
+                status: LlmConversationStatus.Error,
+                error: action.error,
             }
         }
 
@@ -85,6 +99,7 @@ export function llmConversationReducer(
 
         case 'reset': {
             return {
+                ...state,
                 status: LlmConversationStatus.Idle,
                 messageQueue: [],
                 messageList: [],
