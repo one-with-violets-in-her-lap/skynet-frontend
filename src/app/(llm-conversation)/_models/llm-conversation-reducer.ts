@@ -99,11 +99,11 @@ export function llmConversationReducer(
 
         case 'reset': {
             return {
-                ...state,
                 status: LlmConversationStatus.Idle,
                 messageQueue: [],
                 messageList: [],
                 allMessagesReceived: false,
+                error: state.error, // Saves error information between resets
             }
         }
     }
