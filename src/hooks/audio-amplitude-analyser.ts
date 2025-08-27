@@ -15,7 +15,11 @@ export function useAudioAmplitudeAnalyzer(
             return
         }
 
+	const abortController = new AbortController()
+
         const audioContext = new AudioContext()
+
+        document.addEventListener('click', () => audioContext.resume(), { signal: abortController.signal })
 
         const audioSource = audioContext.createMediaElementSource(
             audioElementRef.current,
@@ -57,6 +61,8 @@ export function useAudioAmplitudeAnalyzer(
         requestAnimationFrame(updateAmplitude)
 
         return () => {
+	    abortController.abort()
+
             if (currentAmplitudeUpdateFrameId !== undefined) {
                 cancelAnimationFrame(currentAmplitudeUpdateFrameId)
             }
