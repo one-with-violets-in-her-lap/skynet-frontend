@@ -4,7 +4,7 @@ Listen to two AI models talk to each other
 
 Website with fun AI-related things to waste your time on when you're bored
 
-[Check it out](https://skynet.sorry.run)
+[Check it out](https://skynet.u-uuu-u.com)
 
 ## 🎥 Video demo
 
